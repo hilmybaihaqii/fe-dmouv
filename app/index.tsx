@@ -3,18 +3,30 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, Href } from 'expo-router';
 import { useCachedResources } from '../hooks/useCachedResources';
 import SplashScreenComponent from '../components/SplashScreen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Diperlukan untuk logika onboarding
 
 export default function AppEntry() {
   const isLoadingComplete = useCachedResources();
   const router = useRouter();
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
+  // Tambahkan state baru untuk mengontrol kapan transisi dari splash screen
+  const [splashScreenTimerCompleted, setSplashScreenTimerCompleted] = useState(false);
+
+  useEffect(() => {
+    // Menjalankan timer 5 detik untuk splash screen
+    const timer = setTimeout(() => {
+      setSplashScreenTimerCompleted(true);
+    }, 5000);
+
+    // Membersihkan timer jika komponen di-unmount
+    return () => clearTimeout(timer);
+  }, []); // Efek ini hanya berjalan sekali saat komponen dimuat
 
   useEffect(() => {
     // --- MODIFIKASI SEMENTARA UNTUK DEVELOPMENT ---
-
     // 1. Logika pengecekan AsyncStorage kita buat menjadi komentar untuk sementara
-    /* const checkOnboardingStatus = async () => {
+    /*
+    const checkOnboardingStatus = async () => {
       try {
         const onboardingComplete = await AsyncStorage.getItem('onboardingComplete');
         if (onboardingComplete === 'true') {
@@ -37,10 +49,20 @@ export default function AppEntry() {
   }, []); // Dijalankan sekali saat aplikasi start
 
   useEffect(() => {
-    if (isLoadingComplete && initialRoute) {
+    // Navigasi hanya jika:
+    // 1. Semua sumber daya sudah dimuat (isLoadingComplete)
+    // 2. Rute awal sudah ditentukan (initialRoute)
+    // 3. Timer splash screen 5 detik sudah selesai (splashScreenTimerCompleted)
+    if (isLoadingComplete && initialRoute && splashScreenTimerCompleted) {
       router.replace(initialRoute as Href);
     }
-  }, [isLoadingComplete, initialRoute, router]);
+  }, [isLoadingComplete, initialRoute, splashScreenTimerCompleted, router]);
 
-  return <SplashScreenComponent />;
+  // Tampilkan SplashScreenComponent selama sumber daya belum dimuat LENGKAP ATAU timer belum selesai
+  if (!isLoadingComplete || !splashScreenTimerCompleted) {
+    return <SplashScreenComponent />;
+  }
+
+  // Jika sudah dimuat dan timer selesai, biarkan Expo Router mengambil alih navigasi ke initialRoute
+  return null;
 }

@@ -11,7 +11,9 @@ const OnboardingItem = ({ item }: { item: typeof OnboardingData[0] }) => {
   return (
     <View style={styles.slide}>
       <Image source={item.image} style={styles.image} />
+      {/* Warna title sekarang hitam dengan shadow */}
       <Text style={styles.title}>{item.title}</Text>
+      {/* Warna subtitle sekarang biru tua */}
       <Text style={styles.subtitle}>{item.subtitle}</Text>
     </View>
   );
@@ -27,17 +29,17 @@ const Paginator = ({ data, scrollX }: { data: any[], scrollX: Animated.Value }) 
         // Interpolasi untuk mengubah lebar titik
         const dotWidth = dotPosition.interpolate({
           inputRange: [i - 1, i, i + 1],
-          outputRange: [10, 20, 10], 
+          outputRange: [10, 20, 10],
           extrapolate: 'clamp', // Batasi nilai output agar tidak melebihi batas
         });
-        
+
         // Interpolasi untuk mengubah opasitas titik
         const dotOpacity = dotPosition.interpolate({
           inputRange: [i - 1, i, i + 1],
           outputRange: [0.3, 1, 0.3],
           extrapolate: 'clamp',
         });
-        
+
         // Interpolasi untuk mengubah warna titik
         const dotColor = dotPosition.interpolate({
           inputRange: [i - 1, i, i + 1],
@@ -49,9 +51,9 @@ const Paginator = ({ data, scrollX }: { data: any[], scrollX: Animated.Value }) 
           <Animated.View
             key={i.toString()}
             style={[
-              styles.dot, 
-              { 
-                width: dotWidth, 
+              styles.dot,
+              {
+                width: dotWidth,
                 opacity: dotOpacity,
                 backgroundColor: dotColor,
               }
@@ -89,7 +91,7 @@ export default function OnboardingScreen() {
       slidesRef.current.scrollToIndex({ index });
     }
   };
-  
+
   const navigateToNextScreen = async () => {
     try {
       await AsyncStorage.setItem('onboardingComplete', 'true');
@@ -119,7 +121,7 @@ export default function OnboardingScreen() {
       <View style={[styles.blob, styles.blob1]} />
       <View style={[styles.blob, styles.blob2]} />
       <View style={[styles.blob, styles.blob3]} />
-      
+
       {/* Konten Utama (Gambar & Teks) */}
       <View style={styles.mainContent}>
         <FlatList
@@ -147,12 +149,13 @@ export default function OnboardingScreen() {
           </TouchableOpacity>
         ) : (
           <View style={styles.navigationContainer}>
+            {/* Tombol Back/Skip dalam kotak */}
             {currentIndex === 0 ? (
-              <TouchableOpacity style={styles.sideButton} onPress={navigateToNextScreen}>
+              <TouchableOpacity style={styles.skipBackButton} onPress={navigateToNextScreen}>
                 <Text style={styles.buttonTextSkip}>Skip</Text>
               </TouchableOpacity>
             ) : (
-              <TouchableOpacity style={styles.sideButton} onPress={handleBack}>
+              <TouchableOpacity style={styles.skipBackButton} onPress={handleBack}>
                 <Text style={styles.buttonTextSkip}>Back</Text>
               </TouchableOpacity>
             )}
@@ -160,7 +163,8 @@ export default function OnboardingScreen() {
             {/* Kirim scrollX ke komponen Paginator */}
             <Paginator data={OnboardingData} scrollX={scrollX} />
 
-            <TouchableOpacity style={[styles.sideButton, styles.nextButton]} onPress={handleNext}>
+            {/* Tombol Next dalam kotak */}
+            <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
               <Text style={styles.buttonTextNext}>Next</Text>
             </TouchableOpacity>
           </View>
@@ -185,11 +189,10 @@ const styles = StyleSheet.create({
   blob1: { top: -80, left: -100 },
   blob2: { top: '30%', right: -90 },
   blob3: { bottom: -60, left: '45%' },
-  
-  // --- PERUBAHAN UTAMA UNTUK LAYOUT ---
+
   mainContent: {
     flex: 1,
-    justifyContent: 'center', 
+    justifyContent: 'center',
     alignItems: 'center',
   },
   footer: {
@@ -198,7 +201,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
-  // --- AKHIR PERUBAHAN UTAMA ---
 
   slide: {
     width,
@@ -207,23 +209,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   image: {
-    // Ukuran gambar diperkecil lagi
     width: width * 0.3,
     height: width * 0.3,
     resizeMode: 'contain',
+    marginBottom: 20, 
   },
   title: {
-    fontFamily: 'Poppins-Bold',
-    fontSize: 28,
-    color: Colors.primary,
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 26,
+    color: Colors.text,
     textAlign: 'center',
     marginBottom: 10,
-    marginTop: 60,
+    textShadowColor: 'rgba(0, 0, 0, 0.4)', // Warna bayangan yang sedikit lebih gelap
+    textShadowOffset: { width: 1.5, height: 1.5 }, // Posisi offset bayangan
+    textShadowRadius: 2, 
   },
   subtitle: {
     fontFamily: 'Roboto-Regular',
     fontSize: 16,
-    color: Colors.textLight,
+    color: Colors.primary, // Warna teks subtitle menjadi biru tua
     textAlign: 'center',
     paddingHorizontal: 20,
   },
@@ -233,11 +237,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
   },
-  sideButton: {
-    flex: 1,
+  skipBackButton: {
+    backgroundColor: Colors.primary,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 80,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   nextButton: {
-    alignItems: 'flex-end',
+    backgroundColor: Colors.primary,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 80,
+    // Menambahkan shadow pada tombol
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   paginatorContainer: {
     flex: 2,
@@ -250,16 +283,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginHorizontal: 8,
   },
-  // Hapus dotActive karena sekarang dianimasikan
   buttonTextSkip: {
     fontFamily: 'Poppins-SemiBold',
     fontSize: 16,
-    color: Colors.textLight,
+    color: Colors.white,
   },
   buttonTextNext: {
     fontFamily: 'Poppins-SemiBold',
     fontSize: 16,
-    color: Colors.primary,
+    color: Colors.white,
   },
   buttonGetStarted: {
     backgroundColor: Colors.primary,
@@ -267,6 +299,15 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
     marginHorizontal: 20,
+    // Menambahkan shadow pada tombol Get Started
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   buttonTextGetStarted: {
     fontFamily: 'Poppins-SemiBold',

@@ -1,5 +1,3 @@
-// components/SplashScreen.tsx
-
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { Colors } from '../constants/Colors';
 
@@ -22,7 +20,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.white, 
+    backgroundColor: Colors.white,
   },
   logo: {
     width: 220,
