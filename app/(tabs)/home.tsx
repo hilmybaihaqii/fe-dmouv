@@ -226,6 +226,9 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: Colors.text,
     marginBottom: 15,
+    textShadowColor: "rgba(0, 0, 0, 0.2)",
+    textShadowOffset: { width: 1, height: 2 },
+    textShadowRadius: 4,
   },
   devicesList: {
     paddingBottom: 120,
