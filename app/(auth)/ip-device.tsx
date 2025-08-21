@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  Image,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -13,6 +12,8 @@ import {
   View,
 } from "react-native";
 import { Colors } from "../../constants/Colors";
+// ✅ Import SVG sebagai komponen
+import FullLogo from "../../assets/images/fulldmouv.svg";
 
 export default function IpDeviceScreen() {
   const [ipAddress, setIpAddress] = useState("");
@@ -41,10 +42,7 @@ export default function IpDeviceScreen() {
         style={styles.keyboardAvoidingContainer}
       >
         <View style={styles.headerContainer}>
-          <Image
-            source={require("../../assets/images/fulldmouv.svg")}
-            style={styles.logo}
-          />
+          <FullLogo width={180} height={60} style={styles.logo} />
           <Text style={styles.title}>Enter your IP Device and SSID</Text>
           <Text style={styles.subtitle}>
             Please provide your device&apos;s IP and Wifi SSID to keep you

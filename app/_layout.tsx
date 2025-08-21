@@ -10,7 +10,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "../constants/Colors";
-import { LampProvider } from "../context/LampContext"; //
+import { FanProvider } from "../context/FanContext"; // <<< 1. Impor FanProvider
+import { LampProvider } from "../context/LampContext";
 import { useCachedResources } from "../hooks/useCachedResources";
 
 const Header = ({ options, navigation, route }: NativeStackHeaderProps) => {
@@ -18,8 +19,11 @@ const Header = ({ options, navigation, route }: NativeStackHeaderProps) => {
   const { title } = options;
 
   const isAccountSettings = route.name === "account-settings";
+  // --- 2. Tambahkan 'fan-control' ke kondisi ini ---
   const isTransparentWithBlueIcons =
-    route.name === "lamp-control" || route.name === "notifications";
+    route.name === "lamp-control" ||
+    route.name === "fan-control" ||
+    route.name === "notifications";
 
   let iconColor;
   let backgroundColor;
@@ -112,24 +116,28 @@ export default function RootLayout() {
   }
 
   return (
-    // 2. Bungkus seluruh aplikasi dengan LampProvider
-    <LampProvider>
-      <StatusBar barStyle="light-content" />
-      <Stack
-        screenOptions={{
-          header: ({ options, navigation, route }) => (
-            <Header options={options} navigation={navigation} route={route} />
-          ),
-          headerShown: true,
-        }}
-      >
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="account-settings" options={{ title: "" }} />
-        <Stack.Screen name="lamp-control" options={{ title: "" }} />
-        <Stack.Screen name="notifications" options={{ title: "" }} />
-      </Stack>
-    </LampProvider>
+    // --- 3. Bungkus aplikasi dengan FanProvider ---
+    <FanProvider>
+      <LampProvider>
+        <StatusBar barStyle="light-content" />
+        <Stack
+          screenOptions={{
+            header: ({ options, navigation, route }) => (
+              <Header options={options} navigation={navigation} route={route} />
+            ),
+            headerShown: true,
+          }}
+        >
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="account-settings" options={{ title: "" }} />
+          <Stack.Screen name="lamp-control" options={{ title: "" }} />
+          {/* --- 4. Daftarkan layar fan-control --- */}
+          <Stack.Screen name="fan-control" options={{ title: "" }} />
+          <Stack.Screen name="notifications" options={{ title: "" }} />
+        </Stack>
+      </LampProvider>
+    </FanProvider>
   );
 }

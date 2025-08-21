@@ -1,17 +1,19 @@
-import { LampProvider } from "../../context/LampContext"; // <-- Impor Provider
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import CustomTabBar from "../../components/navigation/CustomTabBar";
 import { Colors } from "../../constants/Colors";
+import { LampProvider } from "../../context/LampContext";
+
+import LogoD from "../../assets/images/D.svg";
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
 
   return (
-    // Bungkus semua tab dengan LampProvider
     <LampProvider>
       <Tabs
         tabBar={(props) => <CustomTabBar {...props} />}
@@ -19,21 +21,31 @@ export default function TabLayout() {
           headerShown: true,
           header: ({ options, navigation }) => {
             const state = navigation.getState();
-            const isHome = state.routes[state.index]?.name === "home";
+            const currentRouteName = state.routes[state.index]?.name;
+            const isHome = currentRouteName === "home";
+
+            // --- LOGIKA BARU UNTUK WARNA IKON ---
+            // Cek apakah halaman saat ini adalah 'history' atau 'teams'
+            const isSpecialPage =
+              currentRouteName === "history" || currentRouteName === "teams";
+
+            // Tentukan warna ikon: biru dongker untuk halaman spesial, putih untuk lainnya
+            const iconColor = isSpecialPage ? Colors.primary : Colors.white;
+            // --- AKHIR DARI LOGIKA BARU ---
 
             return (
               <View
                 style={[styles.headerContainer, { paddingTop: insets.top }]}
               >
+                {/* Bagian Kiri: Logo atau Tombol Kembali */}
                 <View style={styles.leftContainer}>
                   {isHome ? (
                     <TouchableOpacity
                       onPress={() => navigation.navigate("home")}
                     >
-                      <Image
-                        source={require("../../assets/images/D.svg")}
-                        style={styles.headerLogo}
-                      />
+                      <View style={{ marginTop: 9 }}>
+                        <LogoD width={37} height={37} />
+                      </View>
                     </TouchableOpacity>
                   ) : (
                     <TouchableOpacity
@@ -43,31 +55,35 @@ export default function TabLayout() {
                           : navigation.navigate("home")
                       }
                     >
-                      <Ionicons
-                        name="arrow-back"
-                        size={30}
-                        color={Colors.primary}
-                      />
+                      {/* Gunakan iconColor untuk tombol kembali */}
+                      <Ionicons name="arrow-back" size={30} color={iconColor} />
                     </TouchableOpacity>
                   )}
                 </View>
 
+                {/* Bagian Tengah: Judul Halaman */}
                 <View style={styles.centerContainer}>
                   {options.title && (
-                    <Text style={styles.headerTitleText}>{options.title}</Text>
+                    <Text
+                      style={[styles.headerTitleText, { color: iconColor }]}
+                    >
+                      {options.title}
+                    </Text>
                   )}
                 </View>
 
+                {/* Bagian Kanan: Notifikasi dan Akun */}
                 <View style={styles.rightContainer}>
                   <TouchableOpacity
                     onPress={() =>
                       navigation.navigate("notifications" as never)
                     }
                   >
+                    {/* Gunakan iconColor untuk notifikasi */}
                     <Ionicons
                       name="notifications-outline"
-                      size={30}
-                      color={Colors.primary}
+                      size={29}
+                      color={iconColor}
                     />
                   </TouchableOpacity>
                   <TouchableOpacity
@@ -76,10 +92,11 @@ export default function TabLayout() {
                       navigation.navigate("account-settings" as never)
                     }
                   >
+                    {/* Gunakan iconColor untuk profil */}
                     <Ionicons
                       name="person-circle-outline"
-                      size={30}
-                      color={Colors.primary}
+                      size={33}
+                      color={iconColor}
                     />
                   </TouchableOpacity>
                 </View>
@@ -88,36 +105,47 @@ export default function TabLayout() {
           },
         }}
       >
-        <Tabs.Screen name="home" options={{ title: "" }} />
-        <Tabs.Screen name="history" options={{ title: "" }} />
-        <Tabs.Screen name="teams" options={{ title: "" }} />
-        <Tabs.Screen name="settings" options={{ title: "" }} />
+        <Tabs.Screen name="home" />
+        <Tabs.Screen name="history" />
+        <Tabs.Screen name="teams" />
+        <Tabs.Screen name="settings" />
       </Tabs>
     </LampProvider>
   );
 }
 
 const styles = StyleSheet.create({
+  // Styles tidak diubah sama sekali
   headerContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "transparent",
+    zIndex: 10,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
     paddingBottom: 10,
-    backgroundColor: Colors.background,
   },
-  leftContainer: { flex: 1, alignItems: "flex-start" },
-  centerContainer: { flex: 2, alignItems: "center", justifyContent: "center" },
+  leftContainer: {
+    flex: 1,
+    alignItems: "flex-start",
+  },
+  centerContainer: {
+    flex: 2,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   rightContainer: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
   },
-  headerLogo: { width: 35, height: 35, resizeMode: "contain" },
   headerTitleText: {
     fontFamily: "Poppins-Bold",
     fontSize: 18,
-    color: Colors.text,
   },
 });

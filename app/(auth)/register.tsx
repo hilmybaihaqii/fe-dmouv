@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Image,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -16,6 +15,8 @@ import {
   View,
 } from "react-native";
 import { Colors } from "../../constants/Colors";
+// ✅ Import SVG sebagai komponen
+import FullLogo from "../../assets/images/fulldmouv.svg";
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
@@ -74,10 +75,7 @@ export default function RegisterScreen() {
         style={styles.keyboardAvoidingContainer}
       >
         <View style={styles.headerContainer}>
-          <Image
-            source={require("../../assets/images/fulldmouv.svg")}
-            style={styles.logo}
-          />
+          <FullLogo width={180} height={60} style={styles.logo} />
           <Text style={styles.title}>Create Your Account</Text>
           <Text style={styles.subtitle}>
             Let’s get you started with D’mouv.
