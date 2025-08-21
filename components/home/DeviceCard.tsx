@@ -1,28 +1,20 @@
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ImageSourcePropType,
-} from "react-native";
-import { Colors } from "../../constants/Colors";
+// components/home/DeviceCard.tsx
 import { Ionicons } from "@expo/vector-icons";
+import React, { ReactElement } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Colors } from "../../constants/Colors";
 
-interface DeviceCardProps {
-  icon: ImageSourcePropType;
+type DeviceCardProps = {
+  icon: ReactElement; // sekarang menerima JSX element (SVG)
   name: string;
   onPress: () => void;
-}
+};
 
 export default function DeviceCard({ icon, name, onPress }: DeviceCardProps) {
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
-      {/* Bagian Atas (Gambar dengan Latar Belakang Warna) */}
-      <View style={styles.imageContainer}>
-        <Image source={icon} style={styles.image} />
-      </View>
+      {/* Bagian Atas (SVG atau Ikon) */}
+      <View style={styles.imageContainer}>{icon}</View>
 
       {/* Bagian Bawah (Teks dan Tombol dengan Latar Belakang Putih) */}
       <View style={styles.footer}>
@@ -41,7 +33,7 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 25,
     marginRight: 15,
-    backgroundColor: Colors.white, // Warna dasar kartu
+    backgroundColor: Colors.white,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
@@ -51,17 +43,12 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: "100%",
     height: 130,
-    backgroundColor: Colors.offWhite, // Warna kuning gading
+    backgroundColor: Colors.offWhite,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
     justifyContent: "center",
     alignItems: "center",
     padding: 10,
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "contain", // Diubah menjadi contain agar gambar tidak terpotong
   },
   footer: {
     flex: 1,

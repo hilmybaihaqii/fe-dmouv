@@ -4,7 +4,6 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   ActivityIndicator,
-  Image,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
@@ -15,6 +14,8 @@ import {
   View,
 } from "react-native";
 import { Colors } from "../../constants/Colors";
+// ✅ Import SVG sebagai komponen
+import FullLogo from "../../assets/images/fulldmouv.svg";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -58,10 +59,7 @@ export default function LoginScreen() {
         style={styles.keyboardAvoidingContainer}
       >
         <View style={styles.headerContainer}>
-          <Image
-            source={require("../../assets/images/fulldmouv.svg")}
-            style={styles.logo}
-          />
+          <FullLogo width={180} height={60} style={styles.logo} />
           <Text style={styles.title}>Welcome to D&apos;mouv</Text>
           <Text style={styles.subtitle}>Your journey begins here.</Text>
         </View>

@@ -1,15 +1,16 @@
+import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  SafeAreaView,
-  TextInput,
   Modal,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "../../constants/Colors";
 
 const DUMMY_HISTORY = [
@@ -82,6 +83,7 @@ const LogItem: React.FC<LogItemProps> = ({ type, message, time }) => {
 };
 
 export default function HistoryScreen() {
+  const insets = useSafeAreaInsets(); // Hook untuk mendapatkan safe area
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<"All" | "motion" | "on" | "off">(
     "All"
@@ -105,54 +107,66 @@ export default function HistoryScreen() {
 
   return (
     <SafeAreaView style={styles.safeAreaContainer}>
-      {/* Fixed Header at the top */}
-      <View style={styles.pageHeader}>
-        <Text style={styles.screenTitle}>Room History</Text>
-        <View style={styles.searchBar}>
-          <Ionicons name="search-outline" size={24} color={Colors.textLight} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search activity..."
-            placeholderTextColor={Colors.textLight}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          <TouchableOpacity onPress={() => setIsFilterModalVisible(true)}>
-            <Ionicons name="filter" size={24} color={Colors.primary} />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Scrollable Content */}
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        {filteredHistory.length > 0 ? (
-          filteredHistory.map((day, index) => (
-            <View key={index} style={styles.historyCard}>
-              <Text style={styles.cardDate}>{day.date}</Text>
-              {day.logs.map((log, logIndex) => (
-                <LogItem
-                  key={logIndex}
-                  type={log.type as "motion" | "on" | "off"}
-                  message={log.message}
-                  time={log.time}
-                />
-              ))}
-            </View>
-          ))
-        ) : (
-          <View style={styles.noHistoryContainer}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          // Padding atas untuk memberi ruang bagi header transparan
+          paddingTop: insets.top,
+        }}
+      >
+        {/* Kontainer untuk header halaman */}
+        <View style={styles.pageHeader}>
+          <Text style={styles.screenTitle}>Room History</Text>
+          <View style={styles.searchBar}>
             <Ionicons
-              name="information-circle-outline"
-              size={50}
+              name="search-outline"
+              size={24}
               color={Colors.textLight}
-              style={styles.noHistoryIcon}
             />
-            <Text style={styles.noHistoryText}>No history found.</Text>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search activity..."
+              placeholderTextColor={Colors.textLight}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            <TouchableOpacity onPress={() => setIsFilterModalVisible(true)}>
+              <Ionicons name="filter" size={24} color={Colors.primary} />
+            </TouchableOpacity>
           </View>
-        )}
+        </View>
+
+        {/* Kontainer untuk konten riwayat */}
+        <View style={styles.contentContainer}>
+          {filteredHistory.length > 0 ? (
+            filteredHistory.map((day, index) => (
+              <View key={index} style={styles.historyCard}>
+                <Text style={styles.cardDate}>{day.date}</Text>
+                {day.logs.map((log, logIndex) => (
+                  <LogItem
+                    key={logIndex}
+                    type={log.type as "motion" | "on" | "off"}
+                    message={log.message}
+                    time={log.time}
+                  />
+                ))}
+              </View>
+            ))
+          ) : (
+            <View style={styles.noHistoryContainer}>
+              <Ionicons
+                name="information-circle-outline"
+                size={50}
+                color={Colors.textLight}
+                style={styles.noHistoryIcon}
+              />
+              <Text style={styles.noHistoryText}>No history found.</Text>
+            </View>
+          )}
+        </View>
       </ScrollView>
 
-      {/* Filter Modal */}
+      {/* Filter Modal (tidak ada perubahan di sini) */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -211,14 +225,19 @@ const styles = StyleSheet.create({
   },
   pageHeader: {
     paddingHorizontal: 20,
-    marginTop: 10,
     marginBottom: 20,
   },
   screenTitle: {
     fontFamily: "Poppins-Bold",
-    fontSize: 24,
+    fontSize: 26,
     color: Colors.text,
-    marginBottom: 10,
+    // --- PERUBAHAN UTAMA ---
+    marginTop: 20, // Menyamakan dengan halaman home
+    marginBottom: 20, // Memberi jarak ke search bar
+    // Menambahkan shadow pada teks
+    textShadowColor: "rgba(0, 0, 0, 0.2)",
+    textShadowOffset: { width: 1, height: 2 },
+    textShadowRadius: 4,
   },
   searchBar: {
     flexDirection: "row",
@@ -236,56 +255,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.text,
     paddingLeft: 10,
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
-  },
-  modalContent: {
-    backgroundColor: Colors.white,
-    borderRadius: 20,
-    padding: 25,
-    width: "80%",
-    alignItems: "center",
-  },
-  modalTitle: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 20,
-    color: Colors.primary,
-    marginBottom: 20,
-  },
-  filterButton: {
-    backgroundColor: Colors.white,
-    borderRadius: 15,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    width: "100%",
-    alignItems: "center",
-  },
-  filterButtonActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  filterButtonText: {
-    fontFamily: "Roboto-Regular",
-    fontSize: 16,
-    color: Colors.text,
-  },
-  filterButtonTextActive: {
-    color: Colors.white,
-  },
-  modalCloseButton: {
-    marginTop: 20,
-  },
-  modalCloseButtonText: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 16,
-    color: Colors.primary,
   },
   contentContainer: {
     paddingHorizontal: 20,
@@ -352,5 +321,56 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.textLight,
     textAlign: "center",
+  },
+  // Styles untuk Modal (tidak ada perubahan)
+  modalBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+  },
+  modalContent: {
+    backgroundColor: Colors.white,
+    borderRadius: 20,
+    padding: 25,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontFamily: "Poppins-Bold",
+    fontSize: 20,
+    color: Colors.primary,
+    marginBottom: 20,
+  },
+  filterButton: {
+    backgroundColor: Colors.white,
+    borderRadius: 15,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    width: "100%",
+    alignItems: "center",
+  },
+  filterButtonActive: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  filterButtonText: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 16,
+    color: Colors.text,
+  },
+  filterButtonTextActive: {
+    color: Colors.white,
+  },
+  modalCloseButton: {
+    marginTop: 20,
+  },
+  modalCloseButtonText: {
+    fontFamily: "Poppins-Bold",
+    fontSize: 16,
+    color: Colors.primary,
   },
 });
