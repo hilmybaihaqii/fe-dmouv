@@ -1,7 +1,14 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ImageSourcePropType } from 'react-native';
-import { Colors } from '@/constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import React from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ImageSourcePropType,
+} from "react-native";
+import { Colors } from "../../constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
 
 interface DeviceCardProps {
   icon: ImageSourcePropType;
@@ -16,7 +23,7 @@ export default function DeviceCard({ icon, name, onPress }: DeviceCardProps) {
       <View style={styles.imageContainer}>
         <Image source={icon} style={styles.image} />
       </View>
-      
+
       {/* Bagian Bawah (Teks dan Tombol dengan Latar Belakang Putih) */}
       <View style={styles.footer}>
         <Text style={styles.name}>{name}</Text>
@@ -35,36 +42,36 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     marginRight: 15,
     backgroundColor: Colors.white, // Warna dasar kartu
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 6,
   },
   imageContainer: {
-    width: '100%',
+    width: "100%",
     height: 130,
     backgroundColor: Colors.offWhite, // Warna kuning gading
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     padding: 10,
   },
   image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'contain', // Diubah menjadi contain agar gambar tidak terpotong
+    width: "100%",
+    height: "100%",
+    resizeMode: "contain", // Diubah menjadi contain agar gambar tidak terpotong
   },
   footer: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 15,
   },
   name: {
-    fontFamily: 'Poppins-Bold',
+    fontFamily: "Poppins-Bold",
     fontSize: 18,
     color: Colors.text,
   },
@@ -73,7 +80,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

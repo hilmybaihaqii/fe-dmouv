@@ -1,28 +1,43 @@
 // app/(tabs)/home.tsx
 
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
-import { Colors } from '@/constants/Colors';
-import DeviceCard from '@/components/home/DeviceCard';
-import { useRouter } from 'expo-router';
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import {
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import DeviceCard from "../../components/home/DeviceCard";
+import { Colors } from "../../constants/Colors";
 
 const devices = [
-  { id: '1', name: 'LED', icon: require('@/assets/images/led.png') },
+  { id: "1", name: "LED", icon: require("../../assets/images/lamphome.svg") },
 ];
 
 const userName = "TimRisetCPS";
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
 
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
-      const formattedTime = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-      const formattedDate = now.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      
+      const formattedTime = now.toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      const formattedDate = now.toLocaleDateString("id-ID", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+
       setTime(formattedTime);
       setDate(formattedDate);
     }, 1000);
@@ -35,7 +50,7 @@ export default function HomeScreen() {
   };
 
   const handleViewMotion = () => {
-    router.push('/(tabs)/history');
+    router.push("/(tabs)/history");
   };
 
   return (
@@ -47,10 +62,15 @@ export default function HomeScreen() {
             <Text style={styles.welcomeTitle}>Smart Motion Detection</Text>
             <Text style={styles.welcomeSubtitle}>Sense Beyond Limits</Text>
           </View>
-          <Text style={styles.welcomeUser}>Hi, <Text style={styles.welcomeUserName}>{userName}! 👋</Text></Text>
-          
+          <Text style={styles.welcomeUser}>
+            Hi, <Text style={styles.welcomeUserName}>{userName}! 👋</Text>
+          </Text>
+
           <View style={styles.welcomeFooter}>
-            <TouchableOpacity style={styles.viewMotionButton} onPress={handleViewMotion}>
+            <TouchableOpacity
+              style={styles.viewMotionButton}
+              onPress={handleViewMotion}
+            >
               <Text style={styles.viewMotionButtonText}>View Motion</Text>
             </TouchableOpacity>
           </View>
@@ -64,9 +84,9 @@ export default function HomeScreen() {
 
         <View style={styles.devicesSection}>
           <Text style={styles.sectionTitle}>Devices</Text>
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false} 
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.devicesList}
           >
             {devices.map((device) => (
@@ -99,37 +119,37 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   welcomeHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
   },
   welcomeTitle: {
-    fontFamily: 'Poppins-Bold',
+    fontFamily: "Poppins-Bold",
     fontSize: 25,
     color: Colors.white,
   },
   welcomeSubtitle: {
-    fontFamily: 'Poppins-Medium',
+    fontFamily: "Poppins-Medium",
     fontSize: 15,
     color: Colors.primary,
     marginTop: 5,
   },
   welcomeUser: {
-    fontFamily: 'Roboto-Reguler',
+    fontFamily: "Roboto-Reguler",
     fontSize: 25,
     color: Colors.primary,
     marginTop: 5,
   },
   welcomeUserName: {
-    fontFamily: 'Roboto-Reguler',
+    fontFamily: "Roboto-Reguler",
     fontSize: 25,
   },
   welcomeFooter: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
     marginTop: 25,
   },
   welcomeTagline: {
-    fontFamily: 'Poppins-Regular',
+    fontFamily: "Poppins-Regular",
     fontSize: 14,
     color: Colors.white,
     marginTop: 15,
@@ -139,30 +159,30 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 25,
-    alignItems: 'center',
+    alignItems: "center",
   },
   viewMotionButtonText: {
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: "Poppins-SemiBold",
     fontSize: 16,
     color: Colors.white,
   },
-  
+
   // Date and Time Styles
   dateTimeContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 20,
     marginTop: 30,
     marginBottom: 10,
   },
   dateText: {
-    fontFamily: 'Poppins-Regular',
+    fontFamily: "Poppins-Regular",
     fontSize: 14,
     color: Colors.text,
   },
   timeText: {
-    fontFamily: 'Poppins-Regular',
+    fontFamily: "Poppins-Regular",
     fontSize: 14,
     color: Colors.text,
   },
@@ -172,7 +192,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
   },
   sectionTitle: {
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: "Poppins-SemiBold",
     fontSize: 24,
     color: Colors.text,
     marginBottom: 15,

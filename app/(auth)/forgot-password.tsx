@@ -1,84 +1,90 @@
-import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TextInput, 
-  TouchableOpacity, 
-  SafeAreaView, 
-  KeyboardAvoidingView, 
-  Platform, 
-  Image, 
-  Alert 
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/constants/Colors';
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import { Colors } from "../../constants/Colors";
+
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+
+// ✅ Import SVG (pastikan react-native-svg & react-native-svg-transformer sudah di-setup)
+import FullLogo from "../../assets/images/fulldmouv.svg";
 
 export default function ForgotPasswordScreen() {
-  const [email, setEmail] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
-  
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
+    useState(false);
+
   // State untuk melacak input mana yang sedang fokus
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
   const router = useRouter();
 
   const handleResetPassword = () => {
-    // --- Validasi Front-end ---
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !newPassword || !confirmPassword) {
-      alert('Please fill in all fields.');
+      alert("Please fill in all fields.");
       return;
     }
     if (!emailRegex.test(email)) {
-      alert('Please enter a valid email address.');
+      alert("Please enter a valid email address.");
       return;
     }
     if (newPassword.length < 8) {
-      alert('Password must be at least 8 characters long.');
+      alert("Password must be at least 8 characters long.");
       return;
     }
     if (newPassword !== confirmPassword) {
-      alert('Passwords do not match.');
+      alert("Passwords do not match.");
       return;
     }
 
-    // --- Popup Konfirmasi ---
     Alert.alert(
       "Confirm Reset",
       `Are you sure you want to reset the password for ${email}?`,
       [
         { text: "Cancel", style: "cancel" },
-        { 
-          text: "OK", 
+        {
+          text: "OK",
           onPress: () => {
-            console.log('Resetting password for:', { email, newPassword });
-            
+            console.log("Resetting password for:", { email, newPassword });
+
             Alert.alert(
-              "Success", 
+              "Success",
               "Your password has been changed successfully.",
-              [{ text: "OK", onPress: () => router.push('/(auth)/login') }]
+              [{ text: "OK", onPress: () => router.push("/(auth)/login") }]
             );
-          }
-        }
+          },
+        },
       ]
     );
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingContainer}
       >
         <View style={styles.headerContainer}>
-          <Image source={require('@/assets/images/logo.png')} style={styles.logo} />
+          {/* ✅ SVG Logo */}
+          <FullLogo width={180} height={60} style={{ marginBottom: 20 }} />
+
           <Text style={styles.title}>Reset Your Password</Text>
-          <Text style={styles.subtitle}>Enter your email and a new password.</Text>
+          <Text style={styles.subtitle}>
+            Enter your email and a new password.
+          </Text>
         </View>
 
         <View style={styles.card}>
@@ -88,7 +94,10 @@ export default function ForgotPasswordScreen() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: focusedInput === 'email' ? Colors.primary : Colors.border }
+                {
+                  borderColor:
+                    focusedInput === "email" ? Colors.primary : Colors.border,
+                },
               ]}
               placeholder="Enter your registered email"
               placeholderTextColor={Colors.textLight}
@@ -96,7 +105,7 @@ export default function ForgotPasswordScreen() {
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
-              onFocus={() => setFocusedInput('email')}
+              onFocus={() => setFocusedInput("email")}
               onBlur={() => setFocusedInput(null)}
             />
           </View>
@@ -104,10 +113,15 @@ export default function ForgotPasswordScreen() {
           {/* Input New Password */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>New Password</Text>
-            <View 
+            <View
               style={[
                 styles.passwordWrapper,
-                { borderColor: focusedInput === 'newPassword' ? Colors.primary : Colors.border }
+                {
+                  borderColor:
+                    focusedInput === "newPassword"
+                      ? Colors.primary
+                      : Colors.border,
+                },
               ]}
             >
               <TextInput
@@ -117,14 +131,17 @@ export default function ForgotPasswordScreen() {
                 value={newPassword}
                 onChangeText={setNewPassword}
                 secureTextEntry={!isPasswordVisible}
-                onFocus={() => setFocusedInput('newPassword')}
+                onFocus={() => setFocusedInput("newPassword")}
                 onBlur={() => setFocusedInput(null)}
               />
-              <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)} style={styles.eyeIconWrapper}>
-                <Ionicons 
-                  name={isPasswordVisible ? 'eye-off' : 'eye'} 
-                  size={24} 
-                  color={Colors.primary} 
+              <TouchableOpacity
+                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                style={styles.eyeIconWrapper}
+              >
+                <Ionicons
+                  name={isPasswordVisible ? "eye-off" : "eye"}
+                  size={24}
+                  color={Colors.primary}
                 />
               </TouchableOpacity>
             </View>
@@ -133,10 +150,15 @@ export default function ForgotPasswordScreen() {
           {/* Input Confirm New Password */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Confirm New Password</Text>
-            <View 
+            <View
               style={[
                 styles.passwordWrapper,
-                { borderColor: focusedInput === 'confirmPassword' ? Colors.primary : Colors.border }
+                {
+                  borderColor:
+                    focusedInput === "confirmPassword"
+                      ? Colors.primary
+                      : Colors.border,
+                },
               ]}
             >
               <TextInput
@@ -146,21 +168,29 @@ export default function ForgotPasswordScreen() {
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 secureTextEntry={!isConfirmPasswordVisible}
-                onFocus={() => setFocusedInput('confirmPassword')}
+                onFocus={() => setFocusedInput("confirmPassword")}
                 onBlur={() => setFocusedInput(null)}
               />
-              <TouchableOpacity onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)} style={styles.eyeIconWrapper}>
-                <Ionicons 
-                  name={isConfirmPasswordVisible ? 'eye-off' : 'eye'} 
-                  size={24} 
-                  color={Colors.primary} 
+              <TouchableOpacity
+                onPress={() =>
+                  setIsConfirmPasswordVisible(!isConfirmPasswordVisible)
+                }
+                style={styles.eyeIconWrapper}
+              >
+                <Ionicons
+                  name={isConfirmPasswordVisible ? "eye-off" : "eye"}
+                  size={24}
+                  color={Colors.primary}
                 />
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Tombol Submit */}
-          <TouchableOpacity style={styles.connectButton} onPress={handleResetPassword}>
+          <TouchableOpacity
+            style={styles.connectButton}
+            onPress={handleResetPassword}
+          >
             <Text style={styles.connectButtonText}>Reset Password</Text>
           </TouchableOpacity>
 
@@ -182,30 +212,24 @@ const styles = StyleSheet.create({
   },
   keyboardAvoidingContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: 20,
   },
   headerContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 30,
   },
-  logo: {
-    width: 180, 
-    height: 60, 
-    resizeMode: 'contain', 
-    marginBottom: 20,
-  },
   title: {
-    fontFamily: 'Poppins-Bold',
+    fontFamily: "Poppins-Bold",
     fontSize: 22,
     color: Colors.primary,
-    textAlign: 'center',
+    textAlign: "center",
   },
   subtitle: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     fontSize: 16,
     color: Colors.textLight,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 8,
   },
   card: {
@@ -213,7 +237,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 25,
     elevation: 5,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -222,7 +246,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: "Poppins-SemiBold",
     fontSize: 16,
     color: Colors.primary,
     marginBottom: 8,
@@ -234,12 +258,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 12,
     fontSize: 16,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     color: Colors.text,
   },
   passwordWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: Colors.border,
     borderRadius: 10,
@@ -249,31 +273,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 12,
     fontSize: 16,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     color: Colors.text,
   },
   eyeIconWrapper: {
     paddingHorizontal: 10,
   },
-  connectButton: { 
+  connectButton: {
     backgroundColor: Colors.primary,
     paddingVertical: 15,
     borderRadius: 15,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 10,
   },
   connectButtonText: {
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: "Poppins-SemiBold",
     fontSize: 18,
     color: Colors.white,
   },
   footerContainer: {
     marginTop: 30,
-    alignItems: 'center',
+    alignItems: "center",
   },
   backLink: {
-    fontFamily: 'Roboto-Regular',
-    fontSize: 15, 
+    fontFamily: "Roboto-Regular",
+    fontSize: 15,
     color: Colors.primary,
   },
 });
