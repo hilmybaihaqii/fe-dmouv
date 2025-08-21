@@ -1,24 +1,24 @@
-import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  Image, 
-  TextInput, 
-  TouchableOpacity, 
-  SafeAreaView,
+import { Ionicons } from "@expo/vector-icons";
+import { default as Checkbox } from "expo-checkbox";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { Colors } from '@/constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
-import { default as Checkbox } from 'expo-checkbox';
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { Colors } from "../../constants/Colors";
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -30,35 +30,37 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     // Validasi input
     if (!email || !password) {
-      alert('Please fill in all fields.');
+      alert("Please fill in all fields.");
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      alert('Please enter a valid email address.');
+      alert("Please enter a valid email address.");
       return;
     }
     if (!isChecked) {
-      alert('You must agree to the Terms Conditions and Privacy Policy to continue.');
+      alert(
+        "You must agree to the Terms Conditions and Privacy Policy to continue."
+      );
       return;
     }
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    console.log('Logging in with:', { email, password });
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    console.log("Logging in with:", { email, password });
     setIsLoading(false);
-    router.push('/(tabs)/home');
+    router.push("/(tabs)/home");
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingContainer}
       >
         <View style={styles.headerContainer}>
-          <Image 
-            source={require('@/assets/images/logo.png')} 
-            style={styles.logo} 
+          <Image
+            source={require("../../assets/images/fulldmouv.svg")}
+            style={styles.logo}
           />
           <Text style={styles.title}>Welcome to D&apos;mouv</Text>
           <Text style={styles.subtitle}>Your journey begins here.</Text>
@@ -70,7 +72,10 @@ export default function LoginScreen() {
             <TextInput
               style={[
                 styles.input,
-                { borderColor: focusedInput === 'email' ? Colors.primary : Colors.border }
+                {
+                  borderColor:
+                    focusedInput === "email" ? Colors.primary : Colors.border,
+                },
               ]}
               placeholder="Enter your email"
               value={email}
@@ -78,17 +83,24 @@ export default function LoginScreen() {
               keyboardType="email-address"
               autoCapitalize="none"
               placeholderTextColor={Colors.textLight}
-              onFocus={() => setFocusedInput('email')}
+              onFocus={() => setFocusedInput("email")}
               onBlur={() => setFocusedInput(null)}
             />
           </View>
 
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Password</Text>
-            <View style={[
-              styles.passwordWrapper,
-              { borderColor: focusedInput === 'password' ? Colors.primary : Colors.border }
-            ]}>
+            <View
+              style={[
+                styles.passwordWrapper,
+                {
+                  borderColor:
+                    focusedInput === "password"
+                      ? Colors.primary
+                      : Colors.border,
+                },
+              ]}
+            >
               <TextInput
                 style={styles.passwordInput}
                 placeholder="Password"
@@ -96,20 +108,22 @@ export default function LoginScreen() {
                 onChangeText={setPassword}
                 secureTextEntry={!isPasswordVisible}
                 placeholderTextColor={Colors.textLight}
-                onFocus={() => setFocusedInput('password')}
+                onFocus={() => setFocusedInput("password")}
                 onBlur={() => setFocusedInput(null)}
               />
-              <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
-                <Ionicons 
-                  name={isPasswordVisible ? 'eye-off' : 'eye'} 
-                  size={24} 
+              <TouchableOpacity
+                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+              >
+                <Ionicons
+                  name={isPasswordVisible ? "eye-off" : "eye"}
+                  size={24}
                   color={Colors.primary}
                   style={styles.eyeIcon}
                 />
               </TouchableOpacity>
             </View>
           </View>
-          
+
           <View style={styles.checkboxContainer}>
             <Checkbox
               style={styles.checkbox}
@@ -118,19 +132,21 @@ export default function LoginScreen() {
               color={isChecked ? Colors.primary : undefined}
             />
             <View style={{ flex: 1 }}>
-              <TouchableOpacity onPress={() => router.push('/(auth)/privacy-policy')}>
+              <TouchableOpacity
+                onPress={() => router.push("/(auth)/privacy-policy")}
+              >
                 <Text style={styles.checkboxLabel}>
-                  I agree to the{' '}
+                  I agree to the{" "}
                   <Text style={styles.linkText}>Terms & Conditions</Text>
-                  {' and '}
+                  {" and "}
                   <Text style={styles.linkText}>Privacy Policy</Text>
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
 
-          <TouchableOpacity 
-            style={[styles.connectButton, isLoading && styles.buttonDisabled]} 
+          <TouchableOpacity
+            style={[styles.connectButton, isLoading && styles.buttonDisabled]}
             onPress={handleLogin}
             disabled={isLoading}
           >
@@ -141,13 +157,23 @@ export default function LoginScreen() {
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.forgotPasswordLink} onPress={() => router.push('/(auth)/forgot-password')}>
+          <TouchableOpacity
+            style={styles.forgotPasswordLink}
+            onPress={() => router.push("/(auth)/forgot-password")}
+          >
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
-          
+
           <View style={styles.footerContainer}>
-            <Text style={styles.footerText}>Don&apos;t have any account? 
-              <Text style={styles.signUpText} onPress={() => router.push('/(auth)/register')}> Sign Up</Text>
+            <Text style={styles.footerText}>
+              Don&apos;t have any account?
+              <Text
+                style={styles.signUpText}
+                onPress={() => router.push("/(auth)/register")}
+              >
+                {" "}
+                Sign Up
+              </Text>
             </Text>
           </View>
         </View>
@@ -163,30 +189,30 @@ const styles = StyleSheet.create({
   },
   keyboardAvoidingContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: 20,
   },
   headerContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 30,
   },
   logo: {
     width: 180,
     height: 60,
-    resizeMode: 'contain',
+    resizeMode: "contain",
     marginBottom: 20,
   },
   title: {
-    fontFamily: 'Poppins-Bold',
+    fontFamily: "Poppins-Bold",
     fontSize: 22,
     color: Colors.primary,
-    textAlign: 'center',
+    textAlign: "center",
   },
   subtitle: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     fontSize: 16,
     color: Colors.textLight,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 8,
   },
   card: {
@@ -194,7 +220,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 25,
     elevation: 5,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -203,7 +229,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: "Poppins-SemiBold",
     fontSize: 16,
     color: Colors.primary,
     marginBottom: 8,
@@ -215,12 +241,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 12,
     fontSize: 16,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     color: Colors.text,
   },
   passwordWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: Colors.border,
     borderRadius: 10,
@@ -230,66 +256,66 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 12,
     fontSize: 16,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     color: Colors.text,
   },
   eyeIcon: {
     paddingHorizontal: 10,
   },
   checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 20,
   },
   checkbox: {
     marginRight: 12,
   },
   checkboxLabel: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     fontSize: 12,
     color: Colors.textLight,
     lineHeight: 18,
   },
   linkText: {
     color: Colors.primary,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: "Roboto-Medium",
   },
   connectButton: {
     backgroundColor: Colors.primary,
     paddingVertical: 15,
     borderRadius: 15,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonDisabled: {
     backgroundColor: Colors.secondary,
   },
   connectButtonText: {
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: "Poppins-SemiBold",
     fontSize: 18,
     color: Colors.white,
   },
   forgotPasswordLink: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 20,
     marginBottom: 10,
   },
   forgotPasswordText: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     fontSize: 14,
     color: Colors.primary,
   },
   footerContainer: {
     marginTop: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   footerText: {
     fontSize: 15,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     color: Colors.textLight,
   },
   signUpText: {
     fontSize: 15,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: "Roboto-Medium",
     color: Colors.primary,
   },
 });

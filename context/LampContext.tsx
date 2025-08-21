@@ -1,4 +1,11 @@
-import React, { createContext, useState, useContext, ReactNode, Dispatch, SetStateAction } from 'react';
+import React, {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useState,
+} from "react";
 
 interface LampContextType {
   isAutoMode: boolean;
@@ -20,7 +27,7 @@ export const LampProvider = ({ children }: { children: ReactNode }) => {
 export const useLamp = () => {
   const context = useContext(LampContext);
   if (context === undefined) {
-    throw new Error('useLamp must be used within a LampProvider');
+    throw new Error("useLamp must be used within a LampProvider");
   }
   return context;
 };

@@ -4,13 +4,13 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*",
-        "app/*"
-      ]
+      "@/*": ["src/*", "app/*"] // alias supaya bisa resolve ke dua folder
     }
   },
   "include": [
+    "src",
+    "app",
+    "types/**/*.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",

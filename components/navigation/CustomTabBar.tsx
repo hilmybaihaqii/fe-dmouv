@@ -1,18 +1,32 @@
-import React from 'react';
+import React from "react";
 // 'Text' sudah dihapus dari import di bawah
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/constants/Colors';
-import { BlurView } from 'expo-blur';
-import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { View, TouchableOpacity, StyleSheet } from "react-native";
+import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { Ionicons } from "@expo/vector-icons";
+import { Colors } from "../../constants/Colors";
+import { BlurView } from "expo-blur";
+import Animated, {
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
 
-const TabItem = ({ route, isFocused, onPress }: { route: any, isFocused: boolean, onPress: () => void }) => {
-  const iconName = 
-    route.name === 'home' ? 'home' :
-    route.name === 'history' ? 'filter' :
-    route.name === 'teams' ? 'people' :
-    'settings';
+const TabItem = ({
+  route,
+  isFocused,
+  onPress,
+}: {
+  route: any;
+  isFocused: boolean;
+  onPress: () => void;
+}) => {
+  const iconName =
+    route.name === "home"
+      ? "home"
+      : route.name === "history"
+      ? "filter"
+      : route.name === "teams"
+      ? "people"
+      : "settings";
 
   const animatedLabelStyle = useAnimatedStyle(() => {
     return {
@@ -23,10 +37,10 @@ const TabItem = ({ route, isFocused, onPress }: { route: any, isFocused: boolean
 
   return (
     <TouchableOpacity onPress={onPress} style={styles.tabItem}>
-      <Ionicons 
-        name={isFocused ? iconName : `${iconName}-outline` as any} 
-        size={26} 
-        color={isFocused ? Colors.primary : Colors.textLight} 
+      <Ionicons
+        name={isFocused ? iconName : (`${iconName}-outline` as any)}
+        size={26}
+        color={isFocused ? Colors.primary : Colors.textLight}
       />
       {/* Struktur label disederhanakan */}
       <Animated.Text style={[styles.labelText, animatedLabelStyle]}>
@@ -47,7 +61,7 @@ const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
               navigation.navigate(route.name);
             }
           };
-          
+
           return (
             <TabItem
               key={route.key}
@@ -64,13 +78,13 @@ const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
 
 const styles = StyleSheet.create({
   tabBarContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 30,
     left: 20,
     right: 20,
     height: 70,
     borderRadius: 25,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -79,16 +93,16 @@ const styles = StyleSheet.create({
   blurView: {
     flex: 1,
     borderRadius: 25,
-    overflow: 'hidden',
-    flexDirection: 'row',
+    overflow: "hidden",
+    flexDirection: "row",
   },
   tabItem: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   labelText: {
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: "Poppins-SemiBold",
     fontSize: 11,
     color: Colors.primary,
     marginTop: 2,
