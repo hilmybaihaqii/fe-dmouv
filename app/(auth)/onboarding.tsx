@@ -22,9 +22,11 @@ const OnboardingItem = ({ item }: { item: (typeof OnboardingData)[0] }) => {
 
   return (
     <View style={styles.slide}>
-      <SvgImage width={width * 0.6} height={width * 0.6} />
-      <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.subtitle}>{item.subtitle}</Text>
+      <SvgImage width={width * 0.5} height={width * 0.5} />
+      <View style={{ marginTop: 30 }}>
+        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.subtitle}>{item.subtitle}</Text>
+      </View>
     </View>
   );
 };

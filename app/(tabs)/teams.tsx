@@ -1,11 +1,11 @@
 import React from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  SafeAreaView,
   Image,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
 } from "react-native";
 import { Colors } from "../../constants/Colors";
 import { TEAM_DATA } from "../../constants/team-data";
@@ -39,7 +39,7 @@ export default function TeamsScreen() {
       <View style={styles.header}>
         <View style={styles.headerTitleContainer}>
           <Text style={styles.headerTitle}>RESEARCH DIVISION 2023</Text>
-          <Text style={styles.headerSubtitle}>Our Team</Text>
+          <Text style={styles.headerSubtitle}>OUR TEAM</Text>
         </View>
       </View>
 
@@ -80,14 +80,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerTitle: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 16,
+    fontFamily: "Poppins-Regular",
+    fontSize: 15,
     color: Colors.text,
+    marginTop: 55,
   },
   headerSubtitle: {
-    fontFamily: "Poppins-Regular",
-    fontSize: 12,
-    color: Colors.textLight,
+    fontFamily: "Poppins-Bold",
+    fontSize: 24,
+    color: Colors.text,
+    marginBottom: 10,
+    textShadowColor: "rgba(0, 0, 0, 0.2)",
+    textShadowOffset: { width: 1, height: 2 },
+    textShadowRadius: 4,
+    letterSpacing: 2,
   },
   // Main Content Styles
   contentContainer: {
@@ -96,7 +102,7 @@ const styles = StyleSheet.create({
   },
   teamSection: {
     backgroundColor: Colors.secondary,
-    borderRadius: 20,
+    borderRadius: 7,
     padding: 20,
     marginBottom: 20,
   },
@@ -124,7 +130,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: -10,
     zIndex: 1,
-    width: "100%",
+    width: "110%",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -138,15 +144,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   memberName: {
-    fontFamily: "Poppins-Regular",
+    fontFamily: "Poppins-semiBold",
     fontSize: 12,
-    color: Colors.textLight,
+    color: Colors.primary,
     textAlign: "center",
     marginTop: 2,
   },
   memberMajor: {
     fontFamily: "Poppins-Regular",
-    fontSize: 12,
+    fontSize: 8,
     color: Colors.textLight,
     textAlign: "center",
   },
