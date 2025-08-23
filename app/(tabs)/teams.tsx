@@ -1,41 +1,43 @@
 import React from "react";
-import {
-  Image,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import { SvgProps } from "react-native-svg";
+import LogoD from "../../assets/images/D.svg";
 import { Colors } from "../../constants/Colors";
 import { TEAM_DATA } from "../../constants/team-data";
 
-// Component for a single team member card
+// Komponen kartu anggota (tidak ada perubahan fungsi)
 const TeamMemberCard = ({
   code,
   name,
   major,
-  profilePic,
+  ProfilePicComponent,
 }: {
   code: string;
   name: string;
   major: string;
-  profilePic: any;
+  ProfilePicComponent: React.FC<SvgProps>;
 }) => (
   <View style={styles.memberCard}>
     <View style={styles.memberInfoBox}>
       <Text style={styles.memberCode}>{code}</Text>
-      <Text style={styles.memberName}>{name}</Text>
-      <Text style={styles.memberMajor}>{major}</Text>
+      <Text style={styles.memberName} numberOfLines={1}>
+        {name}
+      </Text>
+      <Text style={styles.memberMajor} numberOfLines={1}>
+        {major}
+      </Text>
+      <View style={styles.commentTail} />
     </View>
-    <Image source={profilePic} style={styles.memberProfilePic} />
+    <View style={styles.memberProfilePic}>
+      <ProfilePicComponent width="100%" height="100%" />
+    </View>
   </View>
 );
 
 export default function TeamsScreen() {
   return (
     <SafeAreaView style={styles.safeAreaContainer}>
-      {/* Custom Header without navigation icons */}
+      {/* --- PERUBAHAN 1: Header sekarang berada di luar ScrollView agar tetap --- */}
       <View style={styles.header}>
         <View style={styles.headerTitleContainer}>
           <Text style={styles.headerTitle}>RESEARCH DIVISION 2023</Text>
@@ -54,7 +56,7 @@ export default function TeamsScreen() {
                   code={member.code}
                   name={member.name}
                   major={member.major}
-                  profilePic={member.profilePic}
+                  ProfilePicComponent={LogoD} // Menggunakan LogoD sebagai placeholder
                 />
               ))}
             </View>
@@ -70,11 +72,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.background,
   },
-  // Header Styles
   header: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 15,
+    paddingTop: 60,
+    paddingBottom: 15,
+    backgroundColor: Colors.background,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
   headerTitleContainer: {
     alignItems: "center",
@@ -83,68 +88,81 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
     fontSize: 15,
     color: Colors.text,
-    marginTop: 55,
   },
   headerSubtitle: {
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Roboto-Medium",
     fontSize: 24,
     color: Colors.text,
-    marginBottom: 10,
     textShadowColor: "rgba(0, 0, 0, 0.2)",
     textShadowOffset: { width: 1, height: 2 },
     textShadowRadius: 4,
-    letterSpacing: 2,
+    letterSpacing: 1,
   },
-  // Main Content Styles
   contentContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    padding: 20,
   },
   teamSection: {
     backgroundColor: Colors.secondary,
-    borderRadius: 7,
+    borderRadius: 10,
     padding: 20,
     marginBottom: 20,
   },
   sectionTitle: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 20,
+    fontFamily: "Roboto-SemiBoldItalic",
+    fontSize: 18,
     color: Colors.primary,
-    marginBottom: 15,
+    marginBottom: 20,
     textAlign: "center",
   },
+  // --- PERUBAHAN 2: Style untuk layout anggota tim ---
   membersContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
     flexWrap: "wrap",
-    gap: 15,
+    justifyContent: "space-around",
+    gap: 11,
   },
   memberCard: {
+    width: "48%", // Setiap kartu lebarnya 48% agar ada ruang di tengah
     alignItems: "center",
-    width: "45%",
-    marginBottom: 15,
+    marginBottom: 25,
   },
   memberInfoBox: {
     backgroundColor: Colors.white,
-    borderRadius: 15,
-    padding: 10,
-    marginBottom: -10,
-    zIndex: 1,
-    width: "110%",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+    width: "105%",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    marginBottom: 10,
+    position: "relative",
+  },
+  commentTail: {
+    width: 0,
+    height: 0,
+    backgroundColor: "transparent",
+    borderStyle: "solid",
+    borderLeftWidth: 10,
+    borderRightWidth: 10,
+    borderTopWidth: 10,
+    borderLeftColor: "transparent",
+    borderRightColor: "transparent",
+    borderTopColor: Colors.white,
+    position: "absolute",
+    bottom: -10,
+    alignSelf: "center",
   },
   memberCode: {
     fontFamily: "Poppins-Bold",
-    fontSize: 14,
+    fontSize: 15,
     color: Colors.text,
     textAlign: "center",
   },
   memberName: {
-    fontFamily: "Poppins-semiBold",
+    fontFamily: "Poppins-SemiBold",
     fontSize: 12,
     color: Colors.primary,
     textAlign: "center",
@@ -152,7 +170,7 @@ const styles = StyleSheet.create({
   },
   memberMajor: {
     fontFamily: "Poppins-Regular",
-    fontSize: 8,
+    fontSize: 9,
     color: Colors.textLight,
     textAlign: "center",
   },
@@ -161,7 +179,15 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     borderWidth: 3,
-    borderColor: Colors.white,
-    marginTop: 15,
+    borderColor: Colors.secondary,
+    backgroundColor: Colors.white,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 4,
   },
 });

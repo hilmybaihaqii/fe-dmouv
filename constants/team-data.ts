@@ -1,5 +1,3 @@
-// constants/team-data.ts
-
 export const TEAM_DATA = [
   {
     role: "Backend",
@@ -32,7 +30,7 @@ export const TEAM_DATA = [
       },
       {
         id: "4",
-        name: "Aurelia Aisya R",
+        name: "Aurelia Aisya Rachma",
         code: "URL",
         major: "Telecommunication Engineering",
         profilePic: require("../assets/images/D.svg"),
@@ -44,42 +42,42 @@ export const TEAM_DATA = [
     members: [
       {
         id: "5",
-        name: "Stephani Maria S",
+        name: "Stephani Maria Sianturi",
         code: "TEP",
         major: "Science Data",
         profilePic: require("../assets/images/D.svg"),
       },
       {
         id: "6",
-        name: "Septia Retno P",
+        name: "Septia Retno Puspita",
         code: "RTN",
         major: "Telecommunication Engineering",
         profilePic: require("../assets/images/D.svg"),
       },
       {
         id: "7",
-        name: "Syahril Arvia A",
-        code: "KODE",
+        name: "Syahril Arvia Almazril",
+        code: "AZN",
         major: "Information Technology",
         profilePic: require("../assets/images/D.svg"),
       },
     ],
   },
   {
-    role: "IoT",
+    role: "Internet Of Things",
     members: [
       {
         id: "8",
-        name: "Nama",
-        code: "KODE",
-        major: "Jurusan",
+        name: "Ridho Anugrah Mulyadi",
+        code: "RAM",
+        major: "Computer Engineering",
         profilePic: require("../assets/images/D.svg"),
       },
       {
         id: "9",
-        name: "Nama",
-        code: "KODE",
-        major: "Jurusan",
+        name: "Muhammad Lazuardi",
+        code: "LAZ",
+        major: "Telecommunication Engineering",
         profilePic: require("../assets/images/D.svg"),
       },
       {

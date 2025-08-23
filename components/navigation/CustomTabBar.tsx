@@ -1,14 +1,14 @@
 import React from "react";
 // 'Text' sudah dihapus dari import di bawah
-import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "../../constants/Colors";
+import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { BlurView } from "expo-blur";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   withTiming,
 } from "react-native-reanimated";
+import { Colors } from "../../constants/Colors";
 
 const TabItem = ({
   route,
@@ -82,8 +82,8 @@ const styles = StyleSheet.create({
     bottom: 30,
     left: 20,
     right: 20,
-    height: 70,
-    borderRadius: 25,
+    height: 67,
+    borderRadius: 15,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
   blurView: {
     flex: 1,
-    borderRadius: 25,
+    borderRadius: 15,
     overflow: "hidden",
     flexDirection: "row",
   },

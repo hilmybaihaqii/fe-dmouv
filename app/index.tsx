@@ -1,22 +1,22 @@
 // app/index.tsx
-import React, { useEffect, useState } from 'react';
-import { useRouter, Href } from 'expo-router';
-import { useCachedResources } from '../hooks/useCachedResources';
-import SplashScreenComponent from '../components/SplashScreen';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Diperlukan untuk logika onboarding
+import { Href, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import SplashScreenComponent from "../components/SplashScreen";
+import { useCachedResources } from "../hooks/useCachedResources";
 
 export default function AppEntry() {
   const isLoadingComplete = useCachedResources();
   const router = useRouter();
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
   // Tambahkan state baru untuk mengontrol kapan transisi dari splash screen
-  const [splashScreenTimerCompleted, setSplashScreenTimerCompleted] = useState(false);
+  const [splashScreenTimerCompleted, setSplashScreenTimerCompleted] =
+    useState(false);
 
   useEffect(() => {
     // Menjalankan timer 5 detik untuk splash screen
     const timer = setTimeout(() => {
       setSplashScreenTimerCompleted(true);
-    }, 5000);
+    }, 4000);
 
     // Membersihkan timer jika komponen di-unmount
     return () => clearTimeout(timer);
@@ -44,8 +44,7 @@ export default function AppEntry() {
     */
 
     // 2. Kita paksa rute awal untuk selalu ke halaman onboarding
-    setInitialRoute('/(auth)/onboarding');
-
+    setInitialRoute("/(auth)/onboarding");
   }, []); // Dijalankan sekali saat aplikasi start
 
   useEffect(() => {
