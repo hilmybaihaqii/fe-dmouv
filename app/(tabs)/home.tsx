@@ -12,9 +12,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DeviceCard from "../../components/home/DeviceCard";
 import { Colors } from "../../constants/Colors";
 
-// Import SVG sebagai komponen React
-import FanIcon from "../../assets/images/lampdua.svg"; // Pastikan Anda punya ikon ini
-import LamphomeIcon from "../../assets/images/lamphome.svg";
+import FanIcon from "../../assets/images/fan.svg";
+import LamphomeIcon from "../../assets/images/led.svg";
 
 const devices = [
   { id: "1", name: "LED", icon: <LamphomeIcon width={80} height={80} /> },
@@ -29,7 +28,6 @@ export default function HomeScreen() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
 
-  // Hook untuk mendapatkan waktu dan tanggal saat ini
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
@@ -155,7 +153,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Bold",
     fontSize: 26,
     color: Colors.white,
-    marginTop: 60, // Mengurangi margin atas agar tidak terlalu jauh
+    marginTop: 60,
     // --- Properti Shadow untuk Teks ---
     textShadowColor: "rgba(0, 0, 0, 0.25)", // Warna shadow hitam dengan opasitas 75%
     textShadowOffset: { width: 1, height: 2 }, // Posisi shadow sedikit ke kanan bawah

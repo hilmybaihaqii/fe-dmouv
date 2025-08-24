@@ -1,8 +1,9 @@
 // app/index.tsx
 import { Href, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, } from "react";
 import SplashScreenComponent from "../components/SplashScreen";
 import { useCachedResources } from "../hooks/useCachedResources";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function AppEntry() {
   const isLoadingComplete = useCachedResources();
@@ -24,8 +25,7 @@ export default function AppEntry() {
 
   useEffect(() => {
     // --- MODIFIKASI SEMENTARA UNTUK DEVELOPMENT ---
-    // 1. Logika pengecekan AsyncStorage kita buat menjadi komentar untuk sementara
-    /*
+    
     const checkOnboardingStatus = async () => {
       try {
         const onboardingComplete = await AsyncStorage.getItem('onboardingComplete');
@@ -41,27 +41,20 @@ export default function AppEntry() {
     };
 
     checkOnboardingStatus();
-    */
+    
 
-    // 2. Kita paksa rute awal untuk selalu ke halaman onboarding
     setInitialRoute("/(auth)/onboarding");
-  }, []); // Dijalankan sekali saat aplikasi start
+  }, []);
 
   useEffect(() => {
-    // Navigasi hanya jika:
-    // 1. Semua sumber daya sudah dimuat (isLoadingComplete)
-    // 2. Rute awal sudah ditentukan (initialRoute)
-    // 3. Timer splash screen 5 detik sudah selesai (splashScreenTimerCompleted)
     if (isLoadingComplete && initialRoute && splashScreenTimerCompleted) {
       router.replace(initialRoute as Href);
     }
   }, [isLoadingComplete, initialRoute, splashScreenTimerCompleted, router]);
 
-  // Tampilkan SplashScreenComponent selama sumber daya belum dimuat LENGKAP ATAU timer belum selesai
   if (!isLoadingComplete || !splashScreenTimerCompleted) {
     return <SplashScreenComponent />;
   }
 
-  // Jika sudah dimuat dan timer selesai, biarkan Expo Router mengambil alih navigasi ke initialRoute
   return null;
 }
