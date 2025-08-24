@@ -45,11 +45,9 @@ D-Mouv (Detection Movement) is a smart solution for energy efficiency and comfor
 
 ## 📸 Screenshots
 
-*(Add screenshots of your application here to give a visual representation of the project.)*
-
 | Dashboard | History Page | Teams Page | Setting Page | Notification | Profile |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| <img src="https://placehold.co/300x600/EFEFEF/333?text=Dashboard+Screen" width="300"> | <img src="https://placehold.co/300x600/EFEFEF/333?text=History+Screen" width="300"> | <img src="https://placehold.co/300x600/EFEFEF/333?text=History+Screen" width="300"> | <img src="https://placehold.co/300x600/EFEFEF/333?text=History+Screen" width="300"> | <img src="https://placehold.co/300x600/EFEFEF/333?text=History+Screen" width="300"> | <img src="https://placehold.co/300x600/EFEFEF/333?text=History+Screen" width="300"> | 
+| <img src="https://placehold.co/300x600/EFEFEF/333?text=Dashboard+Screen" width="300"> | <img src="https://placehold.co/300x600/EFEFEF/333?text=History+Screen" width="300"> | <img src="https://placehold.co/300x600/EFEFEF/333?text=Team+Screen" width="300"> | <img src="https://placehold.co/300x600/EFEFEF/333?text=Setting+Screen" width="300"> | <img src="https://placehold.co/300x600/EFEFEF/333?text=Notification+Screen" width="300"> | <img src="https://placehold.co/300x600/EFEFEF/333?text=Profil+Screen" width="300"> | 
 
 ---
 
