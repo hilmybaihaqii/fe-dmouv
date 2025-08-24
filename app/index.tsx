@@ -1,6 +1,6 @@
 // app/index.tsx
 import { Href, useRouter } from "expo-router";
-import React, { useEffect, useState, } from "react";
+import React, { useEffect, useState } from "react";
 import SplashScreenComponent from "../components/SplashScreen";
 import { useCachedResources } from "../hooks/useCachedResources";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,41 +9,48 @@ export default function AppEntry() {
   const isLoadingComplete = useCachedResources();
   const router = useRouter();
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
-  // Tambahkan state baru untuk mengontrol kapan transisi dari splash screen
-  const [splashScreenTimerCompleted, setSplashScreenTimerCompleted] =
-    useState(false);
+  const [splashScreenTimerCompleted, setSplashScreenTimerCompleted] = useState(false);
 
   useEffect(() => {
-    // Menjalankan timer 5 detik untuk splash screen
     const timer = setTimeout(() => {
       setSplashScreenTimerCompleted(true);
-    }, 4000);
+    }, 2000);
 
-    // Membersihkan timer jika komponen di-unmount
     return () => clearTimeout(timer);
-  }, []); // Efek ini hanya berjalan sekali saat komponen dimuat
+  }, []);
 
   useEffect(() => {
-    // --- MODIFIKASI SEMENTARA UNTUK DEVELOPMENT ---
-    
-    const checkOnboardingStatus = async () => {
+    const checkAuthStatus = async () => {
       try {
-        const onboardingComplete = await AsyncStorage.getItem('onboardingComplete');
-        if (onboardingComplete === 'true') {
+        const userToken = await AsyncStorage.getItem('userToken');
+
+        if (userToken) {
+          // Pengguna masih login, arahkan ke home
           setInitialRoute('/(tabs)/home');
         } else {
-          setInitialRoute('/(auth)/onboarding');
+          // --- LOGIKA BARU DI SINI ---
+          // Pengguna tidak login, cek apakah mereka baru saja logout
+          const justLoggedOut = await AsyncStorage.getItem('justLoggedOut');
+
+          if (justLoggedOut === 'true') {
+            // Skenario 1: Baru saja menekan tombol logout
+            // Hapus penanda agar tidak aktif lagi
+            await AsyncStorage.removeItem('justLoggedOut');
+            // Arahkan ke halaman IP Device
+            setInitialRoute('/(auth)/ip-device');
+          } else {
+            // Skenario 2: Membuka aplikasi dari awal (saat sudah logout)
+            // Selalu arahkan ke Onboarding sesuai permintaan
+            setInitialRoute('/(auth)/onboarding');
+          }
         }
       } catch (e) {
-        console.error("Failed to check onboarding status.", e);
+        console.error("Gagal memeriksa status autentikasi.", e);
         setInitialRoute('/(auth)/onboarding');
       }
     };
 
-    checkOnboardingStatus();
-    
-
-    setInitialRoute("/(auth)/onboarding");
+    checkAuthStatus();
   }, []);
 
   useEffect(() => {
@@ -52,9 +59,8 @@ export default function AppEntry() {
     }
   }, [isLoadingComplete, initialRoute, splashScreenTimerCompleted, router]);
 
-  if (!isLoadingComplete || !splashScreenTimerCompleted) {
+  if (!isLoadingComplete || !initialRoute || !splashScreenTimerCompleted) {
     return <SplashScreenComponent />;
   }
-
   return null;
 }

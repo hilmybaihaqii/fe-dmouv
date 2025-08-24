@@ -5,10 +5,10 @@ import {
   StyleSheet,
   Modal,
   TouchableOpacity,
-  Image,
+  Linking,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "../../constants/Colors";
+import FullLogo from "../../assets/images/fulldmouv.svg";
 
 type AboutAppModalProps = {
   visible: boolean;
@@ -25,33 +25,36 @@ const AboutAppModal: React.FC<AboutAppModalProps> = ({ visible, onClose }) => {
     >
       <View style={styles.modalBackground}>
         <View style={styles.modalContent}>
-          {/* Tombol Tutup di dalam modal content */}
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Ionicons name="close-circle" size={32} color={Colors.textLight} />
-          </TouchableOpacity>
-
           {/* Logo Aplikasi */}
-          <Image
-            source={require("../../assets/images/fulldmouv.svg")}
-            style={styles.logoImage}
-            resizeMode="contain"
-          />
+          <FullLogo width={180} height={60} style={styles.logoImage} />
 
           {/* Judul & Deskripsi */}
-          <Text style={styles.modalTitle}>About App</Text>
+          <Text style={styles.modalTitle}>About D&apos;Mouv</Text>
+
           <Text style={styles.modalText}>
-            D&apos;Mouv is a motion detection dashboard that automatically
-            controls your lights. The app detects movement in a room and
-            switches lights on or off when no one is present, helping to
-            conserve energy.
-          </Text>
-          <Text style={styles.modalText}>
-            Additionally, D&apos;Mouv increases room security by alerting you if
-            motion is detected. It&apos;s a simple yet powerful way to save
-            energy and improve the security of your space.
+            D&apos;Mouv is your smart solution for efficient energy use. With advanced smart detection technology, our app automatically senses when people are in a room.
           </Text>
 
-          {/* Tombol Close Utama */}
+          <Text style={styles.modalText}>
+            Our system intuitively turns lights on when a room is occupied and switches them off when it&apos;s empty. This smart automation helps you save energy effortlessly, leading to real savings on your electricity bills.
+          </Text>
+
+          {/* Apresiasi */}
+          <Text style={[styles.modalText, styles.thankYouText]}>
+            Thanks for choosing D&apos;Mouv to make your home smarter and more efficient! We really appreciate your support.
+          </Text>
+
+          {/* Informasi Hukum dan Hak Cipta */}
+          <View style={styles.legalContainer}>
+            <Text style={styles.legalText}>
+              © 2025 D&apos;Mouv. All rights reserved.
+            </Text>
+            <TouchableOpacity onPress={() => Linking.openURL('#')}>
+              <Text style={styles.legalLink}>Terms of Service{'\n'}Privacy Policy</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Tombol Tutup Utama */}
           <TouchableOpacity style={styles.mainCloseButton} onPress={onClose}>
             <Text style={styles.mainCloseButtonText}>Close</Text>
           </TouchableOpacity>
@@ -62,7 +65,6 @@ const AboutAppModal: React.FC<AboutAppModalProps> = ({ visible, onClose }) => {
 };
 
 const styles = StyleSheet.create({
-  // Modal Styles
   modalBackground: {
     flex: 1,
     justifyContent: "center",
@@ -85,14 +87,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  closeButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    zIndex: 1,
-    padding: 5,
-  },
-
   logoImage: {
     marginTop: 15,
     height: 50,
@@ -107,15 +101,39 @@ const styles = StyleSheet.create({
   },
   modalText: {
     fontFamily: "Roboto-Regular",
-    fontSize: 16,
+    fontSize: 15,
     color: Colors.textLight,
     textAlign: "center",
     lineHeight: 24,
     marginBottom: 10,
     paddingHorizontal: 5,
   },
-
-  // Button Styles
+  thankYouText: {
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 14,
+    color: Colors.primary,
+    marginTop: 10,
+    marginBottom: 15,
+  },
+  legalContainer: {
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  legalText: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 12,
+    color: Colors.textLight,
+    textAlign: 'center',
+    marginBottom: 5,
+  },
+  legalLink: {
+    fontFamily: "Roboto-Medium",
+    fontSize: 10,
+    color: Colors.primary,
+    textDecorationLine: 'underline',
+    marginVertical: 2,
+    textAlign: 'center',
+  },
   mainCloseButton: {
     backgroundColor: Colors.primary,
     paddingVertical: 15,

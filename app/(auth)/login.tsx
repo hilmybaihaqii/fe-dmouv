@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { default as Checkbox } from "expo-checkbox";
+import Checkbox from "expo-checkbox";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -13,63 +13,92 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import FullLogo from "../../assets/images/fulldmouv.svg";
 import { Colors } from "../../constants/Colors";
 
+// --- VALIDATION FUNCTIONS ---
+const validateEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email) {
+    return "Fill this field";
+  }
+  if (!emailRegex.test(email)) {
+    return "Please enter a valid email address";
+  }
+  return "";
+};
+
+const validatePassword = (password: string) => {
+  if (!password) {
+    return "Fill this field";
+  }
+  if (password.length < 8) {
+    return "Password must be at least 8 characters";
+  }
+  return "";
+};
+
+// --- MAIN COMPONENT ---
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
-  // State baru untuk melacak input mana yang sedang fokus (active)
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
   const [errors, setErrors] = useState({
     email: "",
     password: "",
-    checkbox: "",
   });
-  const validateFields = () => {
-    const newErrors = { email: "", password: "", checkbox: "" };
-    let isValid = true;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const [loginError, setLoginError] = useState("");
 
-    if (!email) {
-      newErrors.email = "Fill this field";
-      isValid = false;
-    } else if (!emailRegex.test(email)) {
-      newErrors.email = "Please enter a valid email address";
-      isValid = false;
+  const clearErrorsOnChange = () => {
+    setLoginError("");
+    if (errors.email || errors.password) {
+      setErrors({ email: "", password: "" });
     }
-
-    if (!password) {
-      newErrors.password = "Fill this field";
-      isValid = false;
-    } else if (password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
-      isValid = false;
-    }
-
-    if (!isChecked) {
-      newErrors.checkbox = "You must agree to the terms to continue.";
-      isValid = false;
-    }
-
-    setErrors(newErrors);
-    return isValid;
   };
+
   const handleLogin = async () => {
-    // --- PERUBAHAN: Mengganti semua 'alert' dengan satu fungsi validasi ---
-    if (!validateFields()) {
-      return; // Hentikan jika validasi gagal
+    setLoginError("");
+
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+
+    if (emailError || passwordError) {
+      setErrors({
+        email: emailError,
+        password: passwordError,
+      });
+      return;
     }
 
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log("Logging in with:", { email, password });
-    setIsLoading(false);
-    router.push("/(tabs)/home");
+    try {
+      // Simulasi login sukses
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const userToken = "dummy-token"; // Token dummy
+
+      if (rememberMe) {
+        await AsyncStorage.setItem("userToken", userToken);
+      } else {
+        await AsyncStorage.removeItem("userToken");
+      }
+
+      // Log successful login to the console
+      console.log("Login successful! User token:", userToken);
+
+      router.replace("/(tabs)/home");
+    } catch (error) {
+      // Meskipun ini tidak akan pernah dieksekusi dengan logika di atas,
+      // ini tetap merupakan praktik yang baik untuk menanganinya
+      setLoginError("Login failed. Please try again.");
+      console.error("Login failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -87,10 +116,10 @@ export default function LoginScreen() {
         </View>
 
         <View style={styles.card}>
+          {/* Email Input */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Email</Text>
             <TextInput
-              // --- PERUBAHAN: Style dinamis berdasarkan error dan focus ---
               style={[
                 styles.input,
                 focusedInput === "email" && styles.inputFocused,
@@ -98,23 +127,23 @@ export default function LoginScreen() {
               ]}
               placeholder="Enter your email"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(text) => {
+                setEmail(text);
+                clearErrorsOnChange();
+              }}
               keyboardType="email-address"
               autoCapitalize="none"
               placeholderTextColor={Colors.textLight}
               onFocus={() => setFocusedInput("email")}
               onBlur={() => setFocusedInput(null)}
             />
-            {/* --- BAGIAN BARU: Menampilkan teks error --- */}
-            {errors.email ? (
-              <Text style={styles.errorText}>{errors.email}</Text>
-            ) : null}
+            {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
           </View>
 
+          {/* Password Input */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Password</Text>
             <View
-              // --- PERUBAHAN: Style dinamis berdasarkan error dan focus ---
               style={[
                 styles.passwordWrapper,
                 focusedInput === "password" && styles.inputFocused,
@@ -125,15 +154,16 @@ export default function LoginScreen() {
                 style={styles.passwordInput}
                 placeholder="Password"
                 value={password}
-                onChangeText={setPassword}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  clearErrorsOnChange();
+                }}
                 secureTextEntry={!isPasswordVisible}
                 placeholderTextColor={Colors.textLight}
                 onFocus={() => setFocusedInput("password")}
                 onBlur={() => setFocusedInput(null)}
               />
-              <TouchableOpacity
-                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-              >
+              <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
                 <Ionicons
                   name={isPasswordVisible ? "eye-off" : "eye"}
                   size={24}
@@ -142,51 +172,31 @@ export default function LoginScreen() {
                 />
               </TouchableOpacity>
             </View>
-            {/* --- BAGIAN BARU: Menampilkan teks error --- */}
-            {errors.password ? (
-              <Text style={styles.errorText}>{errors.password}</Text>
-            ) : null}
+            {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
           </View>
 
-          <View style={styles.checkboxContainer}>
+          {/* Remember Me Checkbox */}
+          <View style={styles.rememberMeContainer}>
             <Checkbox
               style={styles.checkbox}
-              value={isChecked}
-              onValueChange={setIsChecked}
-              color={isChecked ? Colors.primary : undefined}
+              value={rememberMe}
+              onValueChange={setRememberMe}
+              color={rememberMe ? Colors.primary : undefined}
             />
-            <View style={{ flex: 1 }}>
-              <TouchableOpacity
-                onPress={() => router.push("/(auth)/privacy-policy")}
-              >
-                <Text style={styles.checkboxLabel}>
-                  I agree to the{" "}
-                  <Text style={styles.linkText}>Terms & Conditions</Text>
-                  {" and "}
-                  <Text style={styles.linkText}>Privacy Policy</Text>
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <Text style={styles.rememberMeLabel}>Keep me Signed in</Text>
           </View>
-          {/* --- BAGIAN BARU: Menampilkan teks error untuk checkbox --- */}
-          {errors.checkbox ? (
-            <Text style={[styles.errorText, { marginBottom: 15 }]}>
-              {errors.checkbox}
-            </Text>
-          ) : null}
 
+          {/* Sign In Button */}
           <TouchableOpacity
             style={[styles.connectButton, isLoading && styles.buttonDisabled]}
             onPress={handleLogin}
             disabled={isLoading}
           >
-            {isLoading ? (
-              <ActivityIndicator color={Colors.white} />
-            ) : (
-              <Text style={styles.connectButtonText}>Sign In</Text>
-            )}
+            {isLoading ? <ActivityIndicator color={Colors.white} /> : <Text style={styles.connectButtonText}>Sign In</Text>}
           </TouchableOpacity>
+          {loginError ? <Text style={styles.loginErrorText}>{loginError}</Text> : null}
 
+          {/* Forgot Password Link */}
           <TouchableOpacity
             style={styles.forgotPasswordLink}
             onPress={() => router.push("/(auth)/forgot-password")}
@@ -194,6 +204,7 @@ export default function LoginScreen() {
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
 
+          {/* Sign Up Link */}
           <View style={styles.footerContainer}>
             <Text style={styles.footerText}>
               Don&apos;t have any account?
@@ -252,16 +263,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.cardgray,
     borderRadius: 20,
     padding: 25,
-    // --- PERUBAHAN DI SINI ---
-    elevation: 7, // Naikkan untuk Android
+    elevation: 7,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 }, // Bisa sedikit ditambah offset-nya
-    shadowOpacity: 0.25, // Naikkan agar lebih gelap
-    shadowRadius: 3.84, // Kurangi agar lebih tajam
-    // --- AKHIR PERUBAHAN ---
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: 15,
   },
   label: {
     fontFamily: "Poppins-SemiBold",
@@ -309,10 +318,15 @@ const styles = StyleSheet.create({
   eyeIcon: {
     paddingHorizontal: 10,
   },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 5,
+  rememberMeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  rememberMeLabel: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 12,
+    color: Colors.textLight,
   },
   checkbox: {
     marginRight: 12,
@@ -326,6 +340,15 @@ const styles = StyleSheet.create({
   linkText: {
     color: Colors.primary,
     fontFamily: "Roboto-Medium",
+  },
+  forgotPasswordLink: {
+    alignItems: 'center',
+    marginTop: 50,
+  },
+  forgotPasswordText: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 14,
+    color: Colors.primary,
   },
   connectButton: {
     backgroundColor: Colors.primary,
@@ -341,18 +364,8 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: Colors.white,
   },
-  forgotPasswordLink: {
-    alignItems: "center",
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  forgotPasswordText: {
-    fontFamily: "Roboto-Regular",
-    fontSize: 14,
-    color: Colors.primary,
-  },
   footerContainer: {
-    marginTop: 10,
+    marginTop: 25,
     alignItems: "center",
   },
   footerText: {
@@ -378,5 +391,12 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 5,
     paddingLeft: 4,
+  },
+  loginErrorText: {
+    color: Colors.redDot,
+    fontFamily: "Roboto-Medium",
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 15,
   },
 });
