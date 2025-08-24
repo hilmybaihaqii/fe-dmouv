@@ -1,10 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Image,
   LayoutAnimation,
   Platform,
   SafeAreaView,
@@ -15,12 +13,12 @@ import {
   UIManager,
   View,
 } from "react-native";
-// MENGGUNAKAN API KIPAS ANGIN
+// --- PERUBAHAN: Menggunakan API & Context untuk Kipas Angin ---
 import { fetchFanStatus, updateFanState } from "../api/api";
+import FanIcon from "../assets/images/lampdua.svg"; // Ganti dengan ikon kipas Anda
 import CustomSwitch from "../components/CustomSwitch";
 import { Colors } from "../constants/Colors";
-// MENGGUNAKAN CONTEXT KIPAS ANGIN
-import { useFan } from "../context/FanContext";
+import { useFan } from "../context/FanContext"; // Menggunakan Fan Context
 
 // Enable LayoutAnimation for Android
 if (
@@ -32,9 +30,9 @@ if (
 
 // --- Status Types ---
 type PersonStatus = "detected" | "not-detected";
-type FanStatus = "on" | "off";
+type FanStatus = "on" | "off"; // Diubah dari LightStatus
 
-// --- Status Item Component ---
+// --- Status Item Component (Tidak ada perubahan) ---
 const StatusItem: React.FC<{
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
@@ -52,7 +50,8 @@ const StatusItem: React.FC<{
 
 // --- Main Component ---
 export default function FanControlScreen() {
-  const { isAutoMode, setIsAutoMode } = useFan(); // Menggunakan Fan Context
+  // --- PERUBAHAN: Menggunakan state dan context untuk Kipas Angin ---
+  const { isAutoMode, setIsAutoMode } = useFan();
   const [fanStatus, setFanStatus] = useState<FanStatus>("off");
   const [personStatus, setPersonStatus] =
     useState<PersonStatus>("not-detected");
@@ -62,8 +61,7 @@ export default function FanControlScreen() {
   useEffect(() => {
     const getInitialStatus = async () => {
       try {
-        // Menggunakan API Kipas Angin
-        const data = await fetchFanStatus();
+        const data = await fetchFanStatus(); // API Kipas Angin
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setFanStatus(data.fanStatus);
         setPersonStatus(data.personStatus);
@@ -80,8 +78,7 @@ export default function FanControlScreen() {
 
     const intervalId = setInterval(async () => {
       try {
-        // Menggunakan API Kipas Angin
-        const data = await fetchFanStatus();
+        const data = await fetchFanStatus(); // API Kipas Angin
         if (data.personStatus !== personStatus) {
           LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
           setPersonStatus(data.personStatus);
@@ -101,9 +98,10 @@ export default function FanControlScreen() {
     const performAutoUpdate = (newStatus: FanStatus) => {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       setFanStatus(newStatus);
-      // Menggunakan API Kipas Angin
-      updateFanState({ fanStatus: newStatus }).catch((err: any) =>
-        console.error("Auto mode update failed:", err)
+      updateFanState({ fanStatus: newStatus }).catch(
+        (
+          err // API Kipas Angin
+        ) => console.error("Auto mode update failed:", err)
       );
     };
 
@@ -122,12 +120,11 @@ export default function FanControlScreen() {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
     setIsAutoMode(newMode);
     try {
-      // Menggunakan API Kipas Angin
-      await updateFanState({ isAutoMode: newMode });
+      await updateFanState({ isAutoMode: newMode }); // API Kipas Angin
     } catch (error) {
       console.error("Update auto mode failed:", error);
       Alert.alert("Error", "Failed to update automatic mode.");
-      setIsAutoMode(!newMode); // Rollback state on failure
+      setIsAutoMode(!newMode);
     }
   };
 
@@ -137,12 +134,11 @@ export default function FanControlScreen() {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setFanStatus(newStatus);
     try {
-      // Menggunakan API Kipas Angin
-      await updateFanState({ fanStatus: newStatus });
+      await updateFanState({ fanStatus: newStatus }); // API Kipas Angin
     } catch (error) {
       console.error("Update fan status failed:", error);
       Alert.alert("Error", "Failed to update fan status.");
-      setFanStatus(fanStatus); // Rollback state on failure
+      setFanStatus(fanStatus);
     }
   };
 
@@ -151,22 +147,16 @@ export default function FanControlScreen() {
   // --- Loading View ---
   if (isLoading) {
     return (
-      <LinearGradient
-        colors={[Colors.secondary, Colors.background]}
-        style={styles.centered}
-      >
+      <View style={styles.centered}>
         <ActivityIndicator size="large" color={Colors.white} />
         <Text style={styles.loadingText}>Loading Status...</Text>
-      </LinearGradient>
+      </View>
     );
   }
 
   // --- Main View ---
   return (
-    <LinearGradient
-      colors={[Colors.secondary, Colors.background]}
-      style={styles.fullScreenContainer}
-    >
+    <View style={styles.fullScreenContainer}>
       <StatusBar
         barStyle="dark-content"
         backgroundColor="transparent"
@@ -175,19 +165,15 @@ export default function FanControlScreen() {
       <SafeAreaView style={styles.safeArea}>
         {/* Top Section for Fan */}
         <View style={styles.topContainer}>
+          {/* --- PERUBAHAN: Teks diubah --- */}
           <Text style={styles.headerTitle}>Smart Fan</Text>
           <Text style={styles.headerSubtitle}>Control your smart cooling</Text>
           <View style={styles.deviceImageContainer}>
-            <Image
-              // GANTI DENGAN PATH GAMBAR KIPAS ANGIN ANDA
-              source={require("../assets/images/lamphome.svg")}
-              style={[
-                styles.deviceImage,
-                {
-                  opacity: isFanOn ? 1 : 0.5,
-                },
-              ]}
-              resizeMode="contain"
+            {/* --- PERUBAHAN: Ikon diubah --- */}
+            <FanIcon
+              width="100%"
+              height="100%"
+              fill={isFanOn ? Colors.lampOnColor : Colors.lampOffColor}
             />
           </View>
         </View>
@@ -218,6 +204,7 @@ export default function FanControlScreen() {
               { color: isFanOn ? Colors.greenDot : Colors.textLight },
             ]}
           >
+            {/* --- PERUBAHAN: Teks diubah --- */}
             Fan is {isFanOn ? "On" : "Off"}
           </Text>
 
@@ -235,7 +222,8 @@ export default function FanControlScreen() {
             />
             <View style={styles.statusSeparator} />
             <StatusItem
-              icon="sync-circle-outline" // Ikon yang lebih cocok untuk kipas
+              // --- PERUBAHAN: Ikon dan teks diubah ---
+              icon="sync-circle-outline"
               label="Fan Status"
               value={isFanOn ? "On" : "Off"}
               color={isFanOn ? Colors.greenDot : Colors.redDot}
@@ -247,6 +235,7 @@ export default function FanControlScreen() {
             <View>
               <Text style={styles.autoModeTitle}>Automatic Mode</Text>
               <Text style={styles.autoModeSubtitle}>
+                {/* --- PERUBAHAN: Teks diubah --- */}
                 Control fan based on detection
               </Text>
             </View>
@@ -257,31 +246,30 @@ export default function FanControlScreen() {
           </View>
         </View>
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 }
 
-// --- Stylesheet ---
+// --- Stylesheet (menggunakan nama generik seperti deviceImage agar bisa dipakai ulang) ---
 const styles = StyleSheet.create({
   fullScreenContainer: {
     flex: 1,
+    backgroundColor: Colors.secondary,
   },
   safeArea: {
     flex: 1,
-    justifyContent: "flex-end",
   },
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: Colors.secondary,
   },
   loadingText: {
     marginTop: 10,
     color: Colors.white,
     fontSize: 16,
   },
-
-  // Top (Blue) Section
   topContainer: {
     flex: 1,
     alignItems: "center",
@@ -289,28 +277,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   headerTitle: {
-    fontSize: 32,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 25,
     fontWeight: "bold",
     color: Colors.white,
-    marginBottom: 4,
+    marginTop: 20,
+    textShadowColor: "rgba(0, 0, 0, 0.2)",
+    textShadowOffset: { width: 1, height: 2 },
+    textShadowRadius: 3,
   },
   headerSubtitle: {
-    fontSize: 16,
+    fontFamily: "Poppins-Regular",
+    fontSize: 15,
     color: Colors.textLight,
+    marginTop: 2,
   },
   deviceImageContainer: {
     width: 200,
     height: 200,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 10,
+    padding: 15,
   },
-  deviceImage: {
-    width: "100%",
-    height: "100%",
-  },
-
-  // Bottom (White) Control Card
   controlCard: {
     backgroundColor: Colors.white,
     borderTopLeftRadius: 30,
@@ -332,8 +321,6 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     marginBottom: 25,
   },
-
-  // Power Button
   powerButton: {
     width: 80,
     height: 80,
@@ -351,6 +338,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.white,
   },
   deviceStatus: {
+    fontFamily: "Poppins-SemiBold",
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 25,
@@ -361,13 +349,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.border,
     marginBottom: 20,
   },
-
-  // Status Container
   statusContainer: {
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-around",
-    backgroundColor: "#F7F9FC",
+    backgroundColor: "#F4F3F3",
     borderRadius: 15,
     padding: 15,
     marginBottom: 20,
@@ -381,11 +367,13 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   statusLabel: {
+    fontFamily: "Poppins-Regular",
     fontSize: 14,
     color: Colors.textLight,
   },
   statusValue: {
-    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 15,
     fontWeight: "bold",
     marginTop: 4,
   },
@@ -394,24 +382,24 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.border,
     marginHorizontal: 10,
   },
-
-  // Automatic Mode
   autoModeContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#F7F9FC",
+    backgroundColor: "#F4F3F3",
     borderRadius: 15,
     padding: 20,
     width: "100%",
   },
   autoModeTitle: {
-    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 15,
     fontWeight: "600",
     color: Colors.text,
   },
   autoModeSubtitle: {
-    fontSize: 13,
+    fontFamily: "Poppins-Regular",
+    fontSize: 12,
     color: Colors.textLight,
     marginTop: 2,
   },

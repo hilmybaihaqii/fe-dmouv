@@ -13,9 +13,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Colors } from "../../constants/Colors";
-// ✅ Import SVG sebagai komponen
 import FullLogo from "../../assets/images/fulldmouv.svg";
+import { Colors } from "../../constants/Colors";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -24,27 +23,48 @@ export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const router = useRouter();
-
   // State baru untuk melacak input mana yang sedang fokus (active)
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
-
-  const handleLogin = async () => {
-    // Validasi input
-    if (!email || !password) {
-      alert("Please fill in all fields.");
-      return;
-    }
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    checkbox: "",
+  });
+  const validateFields = () => {
+    const newErrors = { email: "", password: "", checkbox: "" };
+    let isValid = true;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address.");
-      return;
+
+    if (!email) {
+      newErrors.email = "Fill this field";
+      isValid = false;
+    } else if (!emailRegex.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+      isValid = false;
     }
+
+    if (!password) {
+      newErrors.password = "Fill this field";
+      isValid = false;
+    } else if (password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
+      isValid = false;
+    }
+
     if (!isChecked) {
-      alert(
-        "You must agree to the Terms Conditions and Privacy Policy to continue."
-      );
-      return;
+      newErrors.checkbox = "You must agree to the terms to continue.";
+      isValid = false;
     }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+  const handleLogin = async () => {
+    // --- PERUBAHAN: Mengganti semua 'alert' dengan satu fungsi validasi ---
+    if (!validateFields()) {
+      return; // Hentikan jika validasi gagal
+    }
+
     setIsLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 2000));
     console.log("Logging in with:", { email, password });
@@ -59,21 +79,22 @@ export default function LoginScreen() {
         style={styles.keyboardAvoidingContainer}
       >
         <View style={styles.headerContainer}>
-          <FullLogo width={180} height={60} style={styles.logo} />
+          <FullLogo width={306} height={66} style={styles.logo} />
           <Text style={styles.title}>Welcome to D&apos;mouv</Text>
-          <Text style={styles.subtitle}>Your journey begins here.</Text>
+          <Text style={styles.subtitle}>
+            {"Your smart way to sense, react,\nand save energy"}
+          </Text>
         </View>
 
         <View style={styles.card}>
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Email</Text>
             <TextInput
+              // --- PERUBAHAN: Style dinamis berdasarkan error dan focus ---
               style={[
                 styles.input,
-                {
-                  borderColor:
-                    focusedInput === "email" ? Colors.primary : Colors.border,
-                },
+                focusedInput === "email" && styles.inputFocused,
+                !!errors.email && styles.inputError,
               ]}
               placeholder="Enter your email"
               value={email}
@@ -84,19 +105,20 @@ export default function LoginScreen() {
               onFocus={() => setFocusedInput("email")}
               onBlur={() => setFocusedInput(null)}
             />
+            {/* --- BAGIAN BARU: Menampilkan teks error --- */}
+            {errors.email ? (
+              <Text style={styles.errorText}>{errors.email}</Text>
+            ) : null}
           </View>
 
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Password</Text>
             <View
+              // --- PERUBAHAN: Style dinamis berdasarkan error dan focus ---
               style={[
                 styles.passwordWrapper,
-                {
-                  borderColor:
-                    focusedInput === "password"
-                      ? Colors.primary
-                      : Colors.border,
-                },
+                focusedInput === "password" && styles.inputFocused,
+                !!errors.password && styles.inputError,
               ]}
             >
               <TextInput
@@ -120,6 +142,10 @@ export default function LoginScreen() {
                 />
               </TouchableOpacity>
             </View>
+            {/* --- BAGIAN BARU: Menampilkan teks error --- */}
+            {errors.password ? (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            ) : null}
           </View>
 
           <View style={styles.checkboxContainer}>
@@ -142,6 +168,12 @@ export default function LoginScreen() {
               </TouchableOpacity>
             </View>
           </View>
+          {/* --- BAGIAN BARU: Menampilkan teks error untuk checkbox --- */}
+          {errors.checkbox ? (
+            <Text style={[styles.errorText, { marginBottom: 15 }]}>
+              {errors.checkbox}
+            </Text>
+          ) : null}
 
           <TouchableOpacity
             style={[styles.connectButton, isLoading && styles.buttonDisabled]}
@@ -183,7 +215,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.white,
   },
   keyboardAvoidingContainer: {
     flex: 1,
@@ -201,27 +233,32 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-Medium",
     fontSize: 22,
     color: Colors.primary,
     textAlign: "center",
+    textShadowColor: "rgba(0, 0, 0, 0.4)",
+    textShadowOffset: { width: 1.5, height: 1.5 },
+    textShadowRadius: 2,
   },
   subtitle: {
-    fontFamily: "Roboto-Regular",
+    fontFamily: "Poppins-ExtraLight",
     fontSize: 16,
-    color: Colors.textLight,
+    color: Colors.primary,
     textAlign: "center",
     marginTop: 8,
   },
   card: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.cardgray,
     borderRadius: 20,
     padding: 25,
-    elevation: 5,
+    // --- PERUBAHAN DI SINI ---
+    elevation: 7, // Naikkan untuk Android
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 }, // Bisa sedikit ditambah offset-nya
+    shadowOpacity: 0.25, // Naikkan agar lebih gelap
+    shadowRadius: 3.84, // Kurangi agar lebih tajam
+    // --- AKHIR PERUBAHAN ---
   },
   inputContainer: {
     marginBottom: 20,
@@ -241,6 +278,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Roboto-Regular",
     color: Colors.text,
+    backgroundColor: Colors.white,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   passwordWrapper: {
     flexDirection: "row",
@@ -248,6 +291,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
     borderRadius: 10,
+    backgroundColor: Colors.white,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   passwordInput: {
     flex: 1,
@@ -263,7 +312,7 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 5,
   },
   checkbox: {
     marginRight: 12,
@@ -285,7 +334,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonDisabled: {
-    backgroundColor: Colors.secondary,
+    backgroundColor: Colors.primary,
   },
   connectButtonText: {
     fontFamily: "Poppins-SemiBold",
@@ -315,5 +364,19 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: "Roboto-Medium",
     color: Colors.primary,
+  },
+  inputFocused: {
+    borderColor: Colors.primary,
+    borderWidth: 1.5,
+  },
+  inputError: {
+    borderColor: Colors.redDot,
+  },
+  errorText: {
+    color: Colors.redDot,
+    fontFamily: "Roboto-Regular",
+    fontSize: 12,
+    marginTop: 5,
+    paddingLeft: 4,
   },
 });

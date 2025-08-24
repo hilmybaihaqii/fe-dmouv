@@ -1,10 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Image,
   LayoutAnimation,
   Platform,
   SafeAreaView,
@@ -16,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { fetchDeviceStatus, updateLampState } from "../api/api";
+import LampIcon from "../assets/images/lamphome.svg";
 import CustomSwitch from "../components/CustomSwitch";
 import { Colors } from "../constants/Colors";
 import { useLamp } from "../context/LampContext";
@@ -144,22 +143,18 @@ export default function LampControlScreen() {
   // --- Loading View ---
   if (isLoading) {
     return (
-      <LinearGradient
-        colors={[Colors.secondary, Colors.background]}
-        style={styles.centered}
-      >
+      // --- PERUBAHAN: Mengganti LinearGradient menjadi View ---
+      <View style={styles.centered}>
         <ActivityIndicator size="large" color={Colors.white} />
         <Text style={styles.loadingText}>Loading Status...</Text>
-      </LinearGradient>
+      </View>
     );
   }
 
   // --- Main View ---
   return (
-    <LinearGradient
-      colors={[Colors.secondary, Colors.background]}
-      style={styles.fullScreenContainer}
-    >
+    // --- PERUBAHAN: Mengganti LinearGradient menjadi View ---
+    <View style={styles.fullScreenContainer}>
       <StatusBar
         barStyle="dark-content"
         backgroundColor="transparent"
@@ -171,17 +166,11 @@ export default function LampControlScreen() {
           <Text style={styles.headerTitle}>Smart Lamp</Text>
           <Text style={styles.headerSubtitle}>Control your smart lighting</Text>
           <View style={styles.lampImageContainer}>
-            <Image
-              source={require("../assets/images/lampdua.svg")} // Make sure this path is correct
-              style={[
-                styles.lampImage,
-                {
-                  tintColor: isLampOn
-                    ? Colors.lampOnColor
-                    : Colors.lampOffColor,
-                },
-              ]}
-              resizeMode="contain"
+            {/* --- PERUBAHAN: Mengganti <Image> dengan komponen SVG --- */}
+            <LampIcon
+              width="100%"
+              height="100%"
+              fill={isLampOn ? Colors.lampOnColor : Colors.lampOffColor}
             />
           </View>
         </View>
@@ -251,23 +240,26 @@ export default function LampControlScreen() {
           </View>
         </View>
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 }
 
 // --- Stylesheet ---
 const styles = StyleSheet.create({
+  // --- PERUBAHAN: Menambahkan backgroundColor untuk warna solid ---
   fullScreenContainer: {
     flex: 1,
+    backgroundColor: Colors.secondary,
   },
   safeArea: {
     flex: 1,
-    justifyContent: "flex-end",
+    // --- PERUBAHAN: Menghapus justifyContent agar layout mengalir dari atas ke bawah ---
   },
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: Colors.secondary, // Menyamakan warna background
   },
   loadingText: {
     marginTop: 10,
@@ -277,31 +269,34 @@ const styles = StyleSheet.create({
 
   // Top (Blue) Section
   topContainer: {
-    flex: 1,
+    flex: 1, // --- PERUBAHAN: Ini akan mengisi semua ruang kosong di atas card ---
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 20,
   },
   headerTitle: {
-    fontSize: 32,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 25,
     fontWeight: "bold",
     color: Colors.white,
-    marginBottom: 4,
+    marginTop: 20,
+    textShadowColor: "rgba(0, 0, 0, 0.2)",
+    textShadowOffset: { width: 1, height: 2 },
+    textShadowRadius: 3,
   },
   headerSubtitle: {
-    fontSize: 16,
+    fontFamily: "Poppins-Regular",
+    fontSize: 15,
     color: Colors.textLight,
+    marginTop: 2,
   },
   lampImageContainer: {
     width: 200,
     height: 200,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
-  },
-  lampImage: {
-    width: "100%",
-    height: "100%",
+    marginTop: 10,
+    padding: 15,
   },
 
   // Bottom (White) Control Card
@@ -311,13 +306,14 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 30,
     paddingHorizontal: 25,
     paddingTop: 20,
-    paddingBottom: 30, // Added padding for bottom
+    paddingBottom: 30,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -5 },
     shadowOpacity: 0.1,
     shadowRadius: 15,
     elevation: 10,
+    // --- PERUBAHAN: Card tidak lagi memiliki posisi fleksibel, ia akan duduk di bawah topContainer ---
   },
   dragger: {
     width: 50,
@@ -345,6 +341,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.white,
   },
   lampStatus: {
+    fontFamily: "Poppins-SemiBold",
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 25,
@@ -361,7 +358,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-around",
-    backgroundColor: "#F7F9FC",
+    backgroundColor: "#F4F3F3",
     borderRadius: 15,
     padding: 15,
     marginBottom: 20,
@@ -375,11 +372,13 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   statusLabel: {
+    fontFamily: "Poppins-Regular",
     fontSize: 14,
     color: Colors.textLight,
   },
   statusValue: {
-    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 15,
     fontWeight: "bold",
     marginTop: 4,
   },
@@ -394,18 +393,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#F7F9FC",
+    backgroundColor: "#F4F3F3",
     borderRadius: 15,
     padding: 20,
     width: "100%",
   },
   autoModeTitle: {
-    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 15,
     fontWeight: "600",
     color: Colors.text,
   },
   autoModeSubtitle: {
-    fontSize: 13,
+    fontFamily: "Poppins-Regular",
+    fontSize: 12,
     color: Colors.textLight,
     marginTop: 2,
   },

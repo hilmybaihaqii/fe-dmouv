@@ -27,7 +27,7 @@ const OnboardingData = [
   {
     id: "4",
     title: "Let's Get Started",
-    subtitle: "Log in or sign up to connect and take control of your devices.",
+    subtitle: "Log in or sign up to connect and take control of your devices",
     image: WelcomeEmpat,
   },
 ];

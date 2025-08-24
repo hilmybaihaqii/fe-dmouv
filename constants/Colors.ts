@@ -9,8 +9,10 @@ export const Colors = {
   textLight: "#777777",
   white: "#FFFFFF",
   border: "#DDDDDD",
+  cardgray: "#F4F3F3",
   lampOnColor: "#FFD700",
   lampOffColor: "#B0B8C0",
+  bluetext: "4980FF",
 
   success: "#E6F9F0",
   greenDot: "#4CAF50",

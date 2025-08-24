@@ -35,9 +35,9 @@ const styles = StyleSheet.create({
     marginRight: 15,
     backgroundColor: Colors.white,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 10,
+    shadowRadius: 2,
     elevation: 6,
   },
   imageContainer: {

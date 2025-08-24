@@ -1,22 +1,19 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Colors } from "../../constants/Colors";
-
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-
-// ✅ Import SVG (pastikan react-native-svg & react-native-svg-transformer sudah di-setup)
 import FullLogo from "../../assets/images/fulldmouv.svg";
+import { Colors } from "../../constants/Colors";
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState("");
@@ -25,50 +22,57 @@ export default function ForgotPasswordScreen() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
-
-  // State untuk melacak input mana yang sedang fokus
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
-
   const router = useRouter();
 
-  const handleResetPassword = () => {
+  // --- PERUBAHAN: State untuk modal sukses DIHAPUS ---
+  const [errors, setErrors] = useState({
+    email: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const validateFields = () => {
+    const newErrors = { email: "", newPassword: "", confirmPassword: "" };
+    let isValid = true;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !newPassword || !confirmPassword) {
-      alert("Please fill in all fields.");
-      return;
+
+    if (!email) {
+      newErrors.email = "Fill this field";
+      isValid = false;
+    } else if (!emailRegex.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+      isValid = false;
     }
-    if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address.");
-      return;
+
+    if (!newPassword) {
+      newErrors.newPassword = "Fill this field";
+      isValid = false;
+    } else if (newPassword.length < 8) {
+      newErrors.newPassword = "Password must be at least 8 characters";
+      isValid = false;
     }
-    if (newPassword.length < 8) {
-      alert("Password must be at least 8 characters long.");
-      return;
+
+    if (!confirmPassword) {
+      newErrors.confirmPassword = "Fill this field";
+      isValid = false;
+    } else if (newPassword !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+      isValid = false;
     }
-    if (newPassword !== confirmPassword) {
-      alert("Passwords do not match.");
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleResetPassword = () => {
+    if (!validateFields()) {
       return;
     }
 
-    Alert.alert(
-      "Confirm Reset",
-      `Are you sure you want to reset the password for ${email}?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "OK",
-          onPress: () => {
-            console.log("Resetting password for:", { email, newPassword });
-
-            Alert.alert(
-              "Success",
-              "Your password has been changed successfully.",
-              [{ text: "OK", onPress: () => router.push("/(auth)/login") }]
-            );
-          },
-        },
-      ]
-    );
+    console.log("Resetting password for:", { email, newPassword });
+    // --- PERUBAHAN: Langsung navigasi ke halaman login ---
+    router.push("/(auth)/login");
   };
 
   return (
@@ -77,130 +81,131 @@ export default function ForgotPasswordScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingContainer}
       >
-        <View style={styles.headerContainer}>
-          {/* ✅ SVG Logo */}
-          <FullLogo width={180} height={60} style={{ marginBottom: 20 }} />
-
-          <Text style={styles.title}>Reset Your Password</Text>
-          <Text style={styles.subtitle}>
-            Enter your email and a new password.
-          </Text>
-        </View>
-
-        <View style={styles.card}>
-          {/* Input E-mail */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  borderColor:
-                    focusedInput === "email" ? Colors.primary : Colors.border,
-                },
-              ]}
-              placeholder="Enter your registered email"
-              placeholderTextColor={Colors.textLight}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              onFocus={() => setFocusedInput("email")}
-              onBlur={() => setFocusedInput(null)}
-            />
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={styles.headerContainer}>
+            <FullLogo width={306} height={66} style={{ marginBottom: 20 }} />
+            <Text style={styles.title}>Reset Your Password</Text>
+            <Text style={styles.subtitle}>
+              Enter your email and a new password
+            </Text>
           </View>
 
-          {/* Input New Password */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>New Password</Text>
-            <View
-              style={[
-                styles.passwordWrapper,
-                {
-                  borderColor:
-                    focusedInput === "newPassword"
-                      ? Colors.primary
-                      : Colors.border,
-                },
-              ]}
-            >
+          <View style={styles.card}>
+            {/* Input E-mail */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Email</Text>
               <TextInput
-                style={styles.passwordInput}
-                placeholder="Minimum 8 characters"
+                style={[
+                  styles.input,
+                  focusedInput === "email" && styles.inputFocused,
+                  !!errors.email && styles.inputError,
+                ]}
+                placeholder="Enter your registered email"
                 placeholderTextColor={Colors.textLight}
-                value={newPassword}
-                onChangeText={setNewPassword}
-                secureTextEntry={!isPasswordVisible}
-                onFocus={() => setFocusedInput("newPassword")}
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                onFocus={() => setFocusedInput("email")}
                 onBlur={() => setFocusedInput(null)}
               />
-              <TouchableOpacity
-                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-                style={styles.eyeIconWrapper}
-              >
-                <Ionicons
-                  name={isPasswordVisible ? "eye-off" : "eye"}
-                  size={24}
-                  color={Colors.primary}
-                />
-              </TouchableOpacity>
+              {errors.email ? (
+                <Text style={styles.errorText}>{errors.email}</Text>
+              ) : null}
             </View>
-          </View>
 
-          {/* Input Confirm New Password */}
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Confirm New Password</Text>
-            <View
-              style={[
-                styles.passwordWrapper,
-                {
-                  borderColor:
-                    focusedInput === "confirmPassword"
-                      ? Colors.primary
-                      : Colors.border,
-                },
-              ]}
+            {/* Input New Password */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>New Password</Text>
+              <View
+                style={[
+                  styles.passwordWrapper,
+                  focusedInput === "newPassword" && styles.inputFocused,
+                  !!errors.newPassword && styles.inputError,
+                ]}
+              >
+                <TextInput
+                  style={styles.passwordInput}
+                  placeholder="Minimum 8 characters"
+                  placeholderTextColor={Colors.textLight}
+                  value={newPassword}
+                  onChangeText={setNewPassword}
+                  secureTextEntry={!isPasswordVisible}
+                  onFocus={() => setFocusedInput("newPassword")}
+                  onBlur={() => setFocusedInput(null)}
+                />
+                <TouchableOpacity
+                  onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                  style={styles.eyeIconWrapper}
+                >
+                  <Ionicons
+                    name={isPasswordVisible ? "eye-off" : "eye"}
+                    size={24}
+                    color={Colors.primary}
+                  />
+                </TouchableOpacity>
+              </View>
+              {errors.newPassword ? (
+                <Text style={styles.errorText}>{errors.newPassword}</Text>
+              ) : null}
+            </View>
+
+            {/* Input Confirm New Password */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Confirm New Password</Text>
+              <View
+                style={[
+                  styles.passwordWrapper,
+                  focusedInput === "confirmPassword" && styles.inputFocused,
+                  !!errors.confirmPassword && styles.inputError,
+                ]}
+              >
+                <TextInput
+                  style={styles.passwordInput}
+                  placeholder="Repeat new password"
+                  placeholderTextColor={Colors.textLight}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  secureTextEntry={!isConfirmPasswordVisible}
+                  onFocus={() => setFocusedInput("confirmPassword")}
+                  onBlur={() => setFocusedInput(null)}
+                />
+                <TouchableOpacity
+                  onPress={() =>
+                    setIsConfirmPasswordVisible(!isConfirmPasswordVisible)
+                  }
+                  style={styles.eyeIconWrapper}
+                >
+                  <Ionicons
+                    name={isConfirmPasswordVisible ? "eye-off" : "eye"}
+                    size={24}
+                    color={Colors.primary}
+                  />
+                </TouchableOpacity>
+              </View>
+              {errors.confirmPassword ? (
+                <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+              ) : null}
+            </View>
+
+            {/* Tombol Submit */}
+            <TouchableOpacity
+              style={styles.connectButton}
+              onPress={handleResetPassword}
             >
-              <TextInput
-                style={styles.passwordInput}
-                placeholder="Repeat new password"
-                placeholderTextColor={Colors.textLight}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry={!isConfirmPasswordVisible}
-                onFocus={() => setFocusedInput("confirmPassword")}
-                onBlur={() => setFocusedInput(null)}
-              />
-              <TouchableOpacity
-                onPress={() =>
-                  setIsConfirmPasswordVisible(!isConfirmPasswordVisible)
-                }
-                style={styles.eyeIconWrapper}
-              >
-                <Ionicons
-                  name={isConfirmPasswordVisible ? "eye-off" : "eye"}
-                  size={24}
-                  color={Colors.primary}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Tombol Submit */}
-          <TouchableOpacity
-            style={styles.connectButton}
-            onPress={handleResetPassword}
-          >
-            <Text style={styles.connectButtonText}>Reset Password</Text>
-          </TouchableOpacity>
-
-          <View style={styles.footerContainer}>
-            <TouchableOpacity onPress={() => router.back()}>
-              <Text style={styles.backLink}>Back to Sign In</Text>
+              <Text style={styles.connectButtonText}>Reset Password</Text>
             </TouchableOpacity>
+
+            <View style={styles.footerContainer}>
+              <TouchableOpacity onPress={() => router.back()}>
+                <Text style={styles.backLink}>Back to Sign In</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
+
+      {/* --- PERUBAHAN: Modal DIHAPUS dari sini --- */}
     </SafeAreaView>
   );
 }
@@ -208,39 +213,44 @@ export default function ForgotPasswordScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.white,
   },
   keyboardAvoidingContainer: {
     flex: 1,
     justifyContent: "center",
-    padding: 20,
   },
   headerContainer: {
     alignItems: "center",
     marginBottom: 30,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   title: {
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-Medium",
     fontSize: 22,
     color: Colors.primary,
     textAlign: "center",
+    textShadowColor: "rgba(0, 0, 0, 0.4)",
+    textShadowOffset: { width: 1.5, height: 1.5 },
+    textShadowRadius: 2,
   },
   subtitle: {
-    fontFamily: "Roboto-Regular",
+    fontFamily: "Poppins-ExtraLight",
     fontSize: 16,
-    color: Colors.textLight,
+    color: Colors.primary,
     textAlign: "center",
     marginTop: 8,
   },
   card: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.cardgray,
     borderRadius: 20,
     padding: 25,
-    elevation: 5,
+    marginHorizontal: 20,
+    elevation: 7,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   inputContainer: {
     marginBottom: 20,
@@ -260,6 +270,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Roboto-Regular",
     color: Colors.text,
+    backgroundColor: Colors.white,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   passwordWrapper: {
     flexDirection: "row",
@@ -267,6 +283,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
     borderRadius: 10,
+    backgroundColor: Colors.white,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   passwordInput: {
     flex: 1,
@@ -300,4 +322,19 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: Colors.primary,
   },
+  inputFocused: {
+    borderColor: Colors.primary,
+    borderWidth: 1.5,
+  },
+  inputError: {
+    borderColor: Colors.redDot,
+  },
+  errorText: {
+    color: Colors.redDot,
+    fontFamily: "Roboto-Regular",
+    fontSize: 12,
+    marginTop: 5,
+    paddingLeft: 4,
+  },
+  // --- PERUBAHAN: Semua style modal DIHAPUS dari sini ---
 });

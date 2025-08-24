@@ -17,25 +17,36 @@ const DUMMY_HISTORY = [
   {
     date: "Wednesday, 15 August 2025",
     logs: [
+      { type: "off", message: "Lights are now OFF", time: "23:00 PM" },
       {
         type: "motion",
         message: "Motion detected around the device",
-        time: "15:01 PM",
+        time: "22:15 PM",
       },
-      { type: "on", message: "Lights are now ON", time: "15:00 PM" },
-      { type: "off", message: "Lights are now OFF", time: "20:00 PM" },
+      { type: "on", message: "Lights are now ON", time: "19:30 PM" },
+      { type: "off", message: "Lights are now OFF", time: "15:05 PM" },
+      {
+        type: "motion",
+        message: "Motion detected around the device",
+        time: "11:20 AM",
+      },
     ],
   },
   {
     date: "Thursday, 14 August 2025",
     logs: [
+      { type: "off", message: "Lights are now OFF", time: "21:45 PM" },
       {
         type: "motion",
         message: "Motion detected around the device",
-        time: "15:01 PM",
+        time: "16:10 PM",
       },
-      { type: "on", message: "Lights are now ON", time: "15:00 PM" },
-      { type: "off", message: "Lights are now OFF", time: "20:00 PM" },
+      { type: "on", message: "Lights are now ON", time: "16:09 PM" },
+      {
+        type: "motion",
+        message: "Motion detected in the morning",
+        time: "08:30 AM",
+      },
     ],
   },
 ];
@@ -228,16 +239,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   screenTitle: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 26,
+    fontFamily: "Poppins-Medium",
+    fontSize: 25,
     color: Colors.text,
-    // --- PERUBAHAN UTAMA ---
     marginTop: 20, // Menyamakan dengan halaman home
     marginBottom: 20, // Memberi jarak ke search bar
     // Menambahkan shadow pada teks
-    textShadowColor: "rgba(0, 0, 0, 0.2)",
-    textShadowOffset: { width: 1, height: 2 },
-    textShadowRadius: 4,
+    textShadowColor: "rgba(0, 0, 0, 0.20)", // Opasitas dikurangi agar lebih transparan
+    textShadowOffset: { width: 0, height: 1 }, // Offset diperkecil agar lebih dekat ke teks
+    textShadowRadius: 6, // Radius diperbesar agar lebih buram dan halus
   },
   searchBar: {
     flexDirection: "row",
@@ -248,6 +258,11 @@ const styles = StyleSheet.create({
     height: 50,
     borderWidth: 1,
     borderColor: Colors.border,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   searchInput: {
     flex: 1,

@@ -110,15 +110,20 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 20,
+    fontFamily: "Poppins-regular",
+    fontSize: 17,
     color: Colors.text,
+    marginTop: 10,
   },
   greeting: {
-    fontFamily: "Roboto-Regular",
+    fontFamily: "Roboto-Medium",
     fontSize: 25,
-    color: Colors.primary,
-    marginTop: 4,
+    color: Colors.text,
+    marginTop: 2,
+    // --- PERUBAHAN DI SINI ---
+    textShadowColor: "rgba(0, 0, 0, 0.20)", // Opasitas dikurangi agar lebih transparan
+    textShadowOffset: { width: 0, height: 1 }, // Offset diperkecil agar lebih dekat ke teks
+    textShadowRadius: 6, // Radius diperbesar agar lebih buram dan halus
   },
   currentDate: {
     fontFamily: "Roboto-Regular",
@@ -132,8 +137,8 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     backgroundColor: Colors.primary,
-    borderRadius: 16,
-    padding: 18,
+    borderRadius: 10,
+    padding: 12,
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
@@ -145,9 +150,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   itemText: {
-    fontSize: 15,
+    fontSize: 14,
     color: Colors.white,
-    lineHeight: 22,
+    lineHeight: 20,
     fontFamily: "Roboto-Regular",
   },
   itemTextBold: {
@@ -157,7 +162,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.white,
     opacity: 0.8,
-    marginTop: 4,
+    marginTop: 3,
     fontFamily: "Roboto-Regular",
   },
 });

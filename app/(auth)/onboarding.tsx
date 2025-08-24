@@ -195,7 +195,7 @@ export default function OnboardingScreen() {
   );
 }
 
-// 🎨 Styles
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -241,11 +241,12 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
   },
   subtitle: {
-    fontFamily: "Roboto-Regular",
+    fontFamily: "Poppins-ExtraLight",
     fontSize: 16,
     color: Colors.primary,
     textAlign: "center",
     paddingHorizontal: 20,
+    marginBottom: 20,
   },
   navigationContainer: {
     flexDirection: "row",
