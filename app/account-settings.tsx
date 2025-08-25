@@ -20,7 +20,7 @@ import { Colors } from "../constants/Colors";
 const initialUserData = {
   name: "TimRisetCPS",
   email: "TimRisetCPS@gmail.com",
-  profilePicture: require("../assets/images/D.svg"),
+  profilePicture: require("../assets/images/pp.svg"),
 };
 
 export default function AccountSettingsScreen() {
@@ -123,7 +123,6 @@ export default function AccountSettingsScreen() {
             </View>
           </View>
 
-          {/* Opsi Ganti Nama (Posisi baru) */}
           <TouchableOpacity
             style={styles.optionRow}
             onPress={() => setNameModalVisible(true)}
@@ -217,6 +216,7 @@ export default function AccountSettingsScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Modal Components */}
       <ChangePasswordModal
         visible={isPasswordModalVisible}
         onClose={() => setPasswordModalVisible(false)}
@@ -227,12 +227,12 @@ export default function AccountSettingsScreen() {
         visible={isHelpCenterModalVisible}
         onClose={() => setHelpCenterModalVisible(false)}
       />
+
       <AboutAppModal
         visible={isAboutAppModalVisible}
         onClose={() => setAboutAppModalVisible(false)}
       />
 
-      {/* Panggil komponen modal baru di sini */}
       <ChangeNameModal
         visible={isNameModalVisible}
         onClose={() => setNameModalVisible(false)}
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     alignItems: "center",
     marginTop: "auto",
-    marginBottom: 20,
+    marginBottom: 50,
   },
   logoutButtonText: {
     color: Colors.white,

@@ -18,4 +18,9 @@ export const Colors = {
   greenDot: "#4CAF50",
   error: "#FDECEF",
   redDot: "#F44336",
+  
+  fanOnBg: "#EAF2FD",   
+  fanOnColor: "#2E72D2",   
+  fanOffBg: "#EEEEEE",     
+  fanOffColor: "#757575",
 };

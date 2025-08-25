@@ -25,5 +25,8 @@ module.exports = defineConfig([
         },
       },
     },
+    rules: {
+      "import/no-named-as-default": "off",
+    },
   },
 ]);
