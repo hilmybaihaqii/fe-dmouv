@@ -331,14 +331,14 @@ const styles = StyleSheet.create({
   },
   pageTitle: {
     fontFamily: "Poppins-Bold",
-    fontSize: 26,
+    fontSize: 25,
     color: Colors.text,
-    marginBottom: 25,
+    marginBottom: 4,
     textAlign: "center",
   },
   pageSubtitle: {
     fontFamily: "Roboto-Regular",
-    fontSize: 16,
+    fontSize: 15,
     color: Colors.textLight,
     textAlign: "center",
     marginBottom: 30,
@@ -431,8 +431,8 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     backgroundColor: Colors.primary,
-    paddingVertical: 15,
-    borderRadius: 15,
+    paddingVertical: 16,
+    borderRadius: 30,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },

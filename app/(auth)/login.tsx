@@ -238,6 +238,9 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: Colors.primary,
     textAlign: "center",
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   subtitle: {
     fontFamily: "Poppins-ExtraLight",
@@ -275,6 +278,11 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Regular",
     color: Colors.text,
     backgroundColor: Colors.white,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   passwordWrapper: {
     flexDirection: "row",
@@ -283,6 +291,11 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     borderRadius: 10,
     backgroundColor: Colors.white,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   passwordInput: {
     flex: 1,
