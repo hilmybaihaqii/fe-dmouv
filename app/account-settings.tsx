@@ -14,7 +14,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AboutAppModal from "../components/modal/about-app";
 import { ChangeNameModal } from "../components/modal/ChangeNameModal";
 import { ChangePasswordModal } from "../components/modal/ChangePasswordModal";
-import HelpCenterModal from "../components/modal/help-center";
 import { Colors } from "../constants/Colors";
 
 const initialUserData = {
@@ -23,16 +22,17 @@ const initialUserData = {
   profilePicture: require("../assets/images/pp.svg"),
 };
 
-export default function AccountSettingsScreen() {
+const AccountSettingsScreen: React.FC = () => {
   const router = useRouter();
-  const [userName, setUserName] = useState(initialUserData.name);
+  const [userName, setUserName] = useState<string>(initialUserData.name);
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
-  // State untuk semua modal
-  const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
-  const [isHelpCenterModalVisible, setHelpCenterModalVisible] = useState(false);
-  const [isAboutAppModalVisible, setAboutAppModalVisible] = useState(false);
-  const [isNameModalVisible, setNameModalVisible] = useState(false);
+  // State untuk modal
+  const [isPasswordModalVisible, setPasswordModalVisible] =
+    useState<boolean>(false);
+  const [isAboutAppModalVisible, setAboutAppModalVisible] =
+    useState<boolean>(false);
+  const [isNameModalVisible, setNameModalVisible] = useState<boolean>(false);
 
   const insets = useSafeAreaInsets();
 
@@ -78,7 +78,6 @@ export default function AccountSettingsScreen() {
   const handleSubmitNameChange = (newName: string) => {
     setUserName(newName);
     setNameModalVisible(false);
-    // Di sini Anda bisa menambahkan logika untuk mengirim nama baru ke backend
     Alert.alert("Name Updated", "Your name has been successfully changed.");
   };
 
@@ -123,6 +122,7 @@ export default function AccountSettingsScreen() {
             </View>
           </View>
 
+          {/* Name */}
           <TouchableOpacity
             style={styles.optionRow}
             onPress={() => setNameModalVisible(true)}
@@ -166,21 +166,20 @@ export default function AccountSettingsScreen() {
             />
           </TouchableOpacity>
 
+          {/* Add Account */}
           <TouchableOpacity
             style={styles.optionRow}
-            onPress={() => setHelpCenterModalVisible(true)}
+            onPress={() => router.push("/adduser")}
           >
             <Ionicons
-              name="help-circle-outline"
+              name="person-add-outline"
               size={24}
               color={Colors.primary}
               style={styles.optionIcon}
             />
             <View style={styles.optionTextContainer}>
-              <Text style={styles.optionTitle}>Help Center</Text>
-              <Text style={styles.optionValue}>
-                Get assistance with the app
-              </Text>
+              <Text style={styles.optionTitle}>Add Account</Text>
+              <Text style={styles.optionValue}>Create a new user profile</Text>
             </View>
             <Ionicons
               name="chevron-forward"
@@ -189,6 +188,7 @@ export default function AccountSettingsScreen() {
             />
           </TouchableOpacity>
 
+          {/* About App */}
           <TouchableOpacity
             style={styles.optionRow}
             onPress={() => setAboutAppModalVisible(true)}
@@ -223,11 +223,6 @@ export default function AccountSettingsScreen() {
         onSubmit={handleSubmitPasswordChange}
       />
 
-      <HelpCenterModal
-        visible={isHelpCenterModalVisible}
-        onClose={() => setHelpCenterModalVisible(false)}
-      />
-
       <AboutAppModal
         visible={isAboutAppModalVisible}
         onClose={() => setAboutAppModalVisible(false)}
@@ -241,7 +236,9 @@ export default function AccountSettingsScreen() {
       />
     </View>
   );
-}
+};
+
+export default AccountSettingsScreen;
 
 const styles = StyleSheet.create({
   fullScreenContainer: {

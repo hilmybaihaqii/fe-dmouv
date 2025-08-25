@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import {
   Image,
+  Linking,
+  Modal,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
-  View,
-  Modal,
   TouchableOpacity,
-  Pressable,
-  Linking,
+  View,
 } from "react-native";
-import Svg, { Path, Circle, Rect, SvgProps } from "react-native-svg";
+import Svg, { Circle, Path, Rect, SvgProps } from "react-native-svg";
 // Pastikan path import ini benar sesuai dengan struktur folder proyek Anda
 import { TEAM_DATA } from "../../constants/team-data";
 // Saya asumsikan file Colors Anda juga ada di constants
@@ -34,7 +34,17 @@ type Member = {
 
 // --- KOMPONEN IKON MEDIA SOSIAL ---
 const InstagramIcon = (props: SvgProps) => (
-  <Svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke={Colors.text} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+  <Svg
+    width={28}
+    height={28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={Colors.text}
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
     <Rect x={2} y={2} width={20} height={20} rx={5} ry={5} />
     <Path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
     <Path d="M17.5 6.5h.01" />
@@ -42,7 +52,17 @@ const InstagramIcon = (props: SvgProps) => (
 );
 
 const LinkedinIcon = (props: SvgProps) => (
-  <Svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke={Colors.text} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+  <Svg
+    width={28}
+    height={28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={Colors.text}
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
     <Path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z" />
     <Rect x={2} y={9} width={4} height={12} />
     <Circle cx={4} cy={4} r={2} />
@@ -50,7 +70,17 @@ const LinkedinIcon = (props: SvgProps) => (
 );
 
 const GithubIcon = (props: SvgProps) => (
-  <Svg width={28} height={28} viewBox="0 0 24 24" fill="none" stroke={Colors.text} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" {...props}>
+  <Svg
+    width={28}
+    height={28}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke={Colors.text}
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
     <Path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" />
   </Svg>
 );
@@ -63,19 +93,32 @@ type TeamMemberCardProps = {
   profilePicSource: React.FC<SvgProps> | number;
 };
 
-const TeamMemberCard = ({ code, name, major, profilePicSource }: TeamMemberCardProps) => {
+const TeamMemberCard = ({
+  code,
+  name,
+  major,
+  profilePicSource,
+}: TeamMemberCardProps) => {
   const ProfilePic = profilePicSource;
   return (
     <View style={styles.memberCard}>
       <View style={styles.memberInfoBox}>
         <Text style={styles.memberCode}>{code}</Text>
-        <Text style={styles.memberName} numberOfLines={1}>{name}</Text>
-        <Text style={styles.memberMajor} numberOfLines={1}>{major}</Text>
+        <Text style={styles.memberName} numberOfLines={1}>
+          {name}
+        </Text>
+        <Text style={styles.memberMajor} numberOfLines={1}>
+          {major}
+        </Text>
         <View style={styles.commentTail} />
       </View>
       <View style={styles.memberProfilePic}>
         {typeof ProfilePic === "number" ? (
-          <Image source={ProfilePic} style={styles.profileImage} resizeMode="cover" />
+          <Image
+            source={ProfilePic}
+            style={styles.profileImage}
+            resizeMode="cover"
+          />
         ) : (
           <ProfilePic width="100%" height="100%" />
         )}
@@ -142,29 +185,48 @@ export default function TeamsScreen() {
               <View style={styles.modalHeader}>
                 <View style={styles.modalProfilePic}>
                   {typeof selectedMember.profilePic === "number" ? (
-                    <Image source={selectedMember.profilePic} style={styles.profileImage} resizeMode="cover" />
+                    <Image
+                      source={selectedMember.profilePic}
+                      style={styles.profileImage}
+                      resizeMode="cover"
+                    />
                   ) : (
-                    React.createElement(selectedMember.profilePic, { width: "100%", height: "100%" })
+                    React.createElement(selectedMember.profilePic, {
+                      width: "100%",
+                      height: "100%",
+                    })
                   )}
                 </View>
               </View>
               <Text style={styles.modalName}>{selectedMember.name}</Text>
               <Text style={styles.modalCode}>{selectedMember.code}</Text>
               <Text style={styles.modalMajor}>{selectedMember.major}</Text>
-              
+
               <View style={styles.quoteSection}>
                 <Text style={styles.modalQuoteTitle}>Motto</Text>
-                <Text style={styles.modalQuote}>&quot;{selectedMember.quote}&quot;</Text>
+                <Text style={styles.modalQuote}>
+                  &quot;{selectedMember.quote}&quot;
+                </Text>
               </View>
 
               <View style={styles.socialsContainer}>
-                <TouchableOpacity onPress={() => Linking.openURL(selectedMember.socials.instagram)}>
+                <TouchableOpacity
+                  onPress={() =>
+                    Linking.openURL(selectedMember.socials.instagram)
+                  }
+                >
                   <InstagramIcon />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => Linking.openURL(selectedMember.socials.linkedin)}>
+                <TouchableOpacity
+                  onPress={() =>
+                    Linking.openURL(selectedMember.socials.linkedin)
+                  }
+                >
                   <LinkedinIcon />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => Linking.openURL(selectedMember.socials.github)}>
+                <TouchableOpacity
+                  onPress={() => Linking.openURL(selectedMember.socials.github)}
+                >
                   <GithubIcon />
                 </TouchableOpacity>
               </View>
@@ -309,14 +371,14 @@ const styles = StyleSheet.create({
   modalBackdrop: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "flex-end", 
+    justifyContent: "flex-end",
   },
   modalContentContainer: {
     backgroundColor: Colors.white,
-    borderTopLeftRadius: 20, 
-    borderTopRightRadius: 20, 
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     padding: 20,
-    paddingBottom: 80, 
+    paddingBottom: 80,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -2 },
@@ -363,7 +425,7 @@ const styles = StyleSheet.create({
   },
   // --- STYLE BARU UNTUK SEKSI QUOTE ---
   quoteSection: {
-    width: '100%',
+    width: "100%",
     borderTopWidth: 1,
     borderTopColor: Colors.border,
     paddingTop: 15,
@@ -375,7 +437,7 @@ const styles = StyleSheet.create({
     color: Colors.text,
     textAlign: "center",
     marginBottom: 5,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 1,
   },
   modalQuote: {

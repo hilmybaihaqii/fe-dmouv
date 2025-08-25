@@ -1,5 +1,5 @@
 // CONTOH JIKA MENGGUNAKAN FILE JPG
-        // profilePic: require("../assets/images/ridho.jpg"),
+// profilePic: require("../assets/images/ridho.jpg"),
 import ProfilePlaceholder from "../assets/images/pp.svg";
 
 export const TEAM_DATA = [
@@ -24,13 +24,22 @@ export const TEAM_DATA = [
         quote: "The best error message is the one that never appears.",
         socials: { instagram: "#", linkedin: "#", github: "#" },
       },
+      {
+        id: "3",
+        name: "Aria",
+        code: "belum",
+        major: "Telecommunication Engineering",
+        profilePic: ProfilePlaceholder,
+        quote: "The best error message is the one that never appears.",
+        socials: { instagram: "#", linkedin: "#", github: "#" },
+      },
     ],
   },
   {
     role: "Frontend",
     members: [
       {
-        id: "3",
+        id: "4",
         name: "Hilmy Baihaqi",
         code: "IMI",
         major: "Telecommunication Engineering",
@@ -39,9 +48,18 @@ export const TEAM_DATA = [
         socials: { instagram: "#", linkedin: "#", github: "#" },
       },
       {
-        id: "4",
+        id: "5",
         name: "Aurelia Aisya Rachma",
         code: "URL",
+        major: "Telecommunication Engineering",
+        profilePic: ProfilePlaceholder,
+        quote: "Good design is good business.",
+        socials: { instagram: "#", linkedin: "#", github: "#" },
+      },
+      {
+        id: "6",
+        name: "syayid",
+        code: "belum",
         major: "Telecommunication Engineering",
         profilePic: ProfilePlaceholder,
         quote: "Good design is good business.",
@@ -53,7 +71,7 @@ export const TEAM_DATA = [
     role: "Machine Learning",
     members: [
       {
-        id: "5",
+        id: "7",
         name: "Stephani Maria Sianturi",
         code: "TEP",
         major: "Science Data",
@@ -62,16 +80,17 @@ export const TEAM_DATA = [
         socials: { instagram: "#", linkedin: "#", github: "#" },
       },
       {
-        id: "6",
+        id: "8",
         name: "Septia Retno Puspita",
         code: "RTN",
         major: "Telecommunication Engineering",
         profilePic: ProfilePlaceholder,
-        quote: "The goal is to turn data into information, and information into insight.",
+        quote:
+          "The goal is to turn data into information, and information into insight.",
         socials: { instagram: "#", linkedin: "#", github: "#" },
       },
       {
-        id: "7",
+        id: "9",
         name: "Syahril Arvia Almazril",
         code: "AZN",
         major: "Information Technology",
@@ -85,7 +104,7 @@ export const TEAM_DATA = [
     role: "Internet Of Things",
     members: [
       {
-        id: "8",
+        id: "10",
         name: "Ridho Anugrah Mulyadi",
         code: "RAM",
         major: "Computer Engineering",
@@ -94,7 +113,7 @@ export const TEAM_DATA = [
         socials: { instagram: "#", linkedin: "#", github: "#" },
       },
       {
-        id: "9",
+        id: "11",
         name: "Muhammad Lazuardi",
         code: "LAZ",
         major: "Telecommunication Engineering",
@@ -103,7 +122,7 @@ export const TEAM_DATA = [
         socials: { instagram: "#", linkedin: "#", github: "#" },
       },
       {
-        id: "10",
+        id: "12",
         name: "Rivanda Abdillah",
         code: "RVN",
         major: "Telecommunication Engineering",

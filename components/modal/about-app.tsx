@@ -1,14 +1,15 @@
+import { Ionicons } from "@expo/vector-icons"; // <-- IMPORT BARU
 import React from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  TouchableOpacity,
   Linking,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { Colors } from "../../constants/Colors";
 import FullLogo from "../../assets/images/fulldmouv.svg";
+import { Colors } from "../../constants/Colors";
 
 type AboutAppModalProps = {
   visible: boolean;
@@ -16,6 +17,15 @@ type AboutAppModalProps = {
 };
 
 const AboutAppModal: React.FC<AboutAppModalProps> = ({ visible, onClose }) => {
+  const instagramUrl =
+    "https://www.instagram.com/cpslaboratory?igsh=MXBobDF3YWZ0aTk4NQ==";
+
+  const handleInstagramPress = () => {
+    Linking.openURL(instagramUrl).catch((err) =>
+      console.error("An error occurred", err)
+    );
+  };
+
   return (
     <Modal
       animationType="fade"
@@ -32,25 +42,44 @@ const AboutAppModal: React.FC<AboutAppModalProps> = ({ visible, onClose }) => {
           <Text style={styles.modalTitle}>About D&apos;Mouv</Text>
 
           <Text style={styles.modalText}>
-            D&apos;Mouv is your smart solution for efficient energy use. With advanced smart detection technology, our app automatically senses when people are in a room.
+            D&apos;Mouv is your smart solution for efficient energy use. With
+            advanced smart detection technology, our app automatically senses
+            when people are in a room.
           </Text>
 
           <Text style={styles.modalText}>
-            Our system intuitively turns lights on when a room is occupied and switches them off when it&apos;s empty. This smart automation helps you save energy effortlessly, leading to real savings on your electricity bills.
+            Our system intuitively turns lights on when a room is occupied and
+            switches them off when it&apos;s empty. This smart automation helps
+            you save energy effortlessly, leading to real savings on your
+            electricity bills.
           </Text>
 
-          {/* Apresiasi */}
-          <Text style={[styles.modalText, styles.thankYouText]}>
-            Thanks for choosing D&apos;Mouv to make your home smarter and more efficient! We really appreciate your support.
-          </Text>
+          {/* <-- BAGIAN BARU: HELP CENTER --> */}
+          <View style={styles.helpCenterContainer}>
+            <Text style={styles.helpCenterTitle}>Help Center</Text>
+            <TouchableOpacity
+              style={styles.instagramLink}
+              onPress={handleInstagramPress}
+            >
+              <Ionicons
+                name="logo-instagram"
+                size={22}
+                color={Colors.text}
+                style={styles.instagramIcon}
+              />
+              <Text style={styles.instagramText}>@cpslaboratory</Text>
+            </TouchableOpacity>
+          </View>
 
           {/* Informasi Hukum dan Hak Cipta */}
           <View style={styles.legalContainer}>
             <Text style={styles.legalText}>
               © 2025 D&apos;Mouv. All rights reserved.
             </Text>
-            <TouchableOpacity onPress={() => Linking.openURL('#')}>
-              <Text style={styles.legalLink}>Terms of Service{'\n'}Privacy Policy</Text>
+            <TouchableOpacity onPress={() => Linking.openURL("#")}>
+              <Text style={styles.legalLink}>
+                Terms of Service{"\n"}Privacy Policy
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -108,31 +137,57 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 5,
   },
-  thankYouText: {
-    fontFamily: "Poppins-SemiBold",
-    fontSize: 14,
-    color: Colors.primary,
-    marginTop: 10,
+  // <-- STYLES BARU UNTUK HELP CENTER -->
+  helpCenterContainer: {
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: Colors.border,
+    width: "100%",
+    alignItems: "center",
+    paddingVertical: 15,
     marginBottom: 15,
   },
+  helpCenterTitle: {
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 16,
+    color: Colors.text,
+    marginBottom: 10,
+  },
+  instagramLink: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F3F3F3",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+  },
+  instagramIcon: {
+    marginRight: 8,
+  },
+  instagramText: {
+    fontFamily: "Roboto-Medium",
+    fontSize: 14,
+    color: Colors.text,
+  },
+  // ------------------------------------
   legalContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 10,
   },
   legalText: {
     fontFamily: "Roboto-Regular",
     fontSize: 12,
     color: Colors.textLight,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 5,
   },
   legalLink: {
     fontFamily: "Roboto-Medium",
     fontSize: 10,
     color: Colors.primary,
-    textDecorationLine: 'underline',
+    textDecorationLine: "underline",
     marginVertical: 2,
-    textAlign: 'center',
+    textAlign: "center",
   },
   mainCloseButton: {
     backgroundColor: Colors.primary,

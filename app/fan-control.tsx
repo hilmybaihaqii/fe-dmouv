@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context"; // <<< 1. Impor
 import { fetchFanStatus, updateFanState } from "../api/api";
-import FanIcon from "../assets/images/fan.svg";
+import FanIcon from "../assets/images/fandua.svg";
 import CustomSwitch from "../components/CustomSwitch";
 import { Colors } from "../constants/Colors";
 import { useFan } from "../context/FanContext";

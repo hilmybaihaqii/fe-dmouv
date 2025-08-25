@@ -12,8 +12,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DeviceCard from "../../components/home/DeviceCard";
 import { Colors } from "../../constants/Colors";
 
-import FanIcon from "../../assets/images/fan.svg";
-import LamphomeIcon from "../../assets/images/led.svg";
+import FanIcon from "../../assets/images/fandua.svg";
+import LamphomeIcon from "../../assets/images/leddua.svg";
 
 const devices = [
   { id: "1", name: "LED", icon: <LamphomeIcon width={80} height={80} /> },

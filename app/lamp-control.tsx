@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context"; // <<< 1. Impor
 import { fetchDeviceStatus, updateLampState } from "../api/api";
-import LampIcon from "../assets/images/led.svg";
+import LampIcon from "../assets/images/leddua.svg";
 import CustomSwitch from "../components/CustomSwitch";
 import { Colors } from "../constants/Colors";
 import { useLamp } from "../context/LampContext";
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: "bold",
     color: Colors.white,
-    marginTop: 20,
+    marginTop: 10,
     textShadowColor: "rgba(0, 0, 0, 0.2)",
     textShadowOffset: { width: 1, height: 2 },
     textShadowRadius: 3,

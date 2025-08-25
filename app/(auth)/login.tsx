@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Checkbox from "expo-checkbox";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -13,11 +14,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import FullLogo from "../../assets/images/fulldmouv.svg";
 import { Colors } from "../../constants/Colors";
 
-// --- VALIDATION FUNCTIONS ---
+// --- VALIDATION FUNCTIONS (Tidak ada perubahan) ---
 const validateEmail = (email: string) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email) {
@@ -28,7 +28,6 @@ const validateEmail = (email: string) => {
   }
   return "";
 };
-
 const validatePassword = (password: string) => {
   if (!password) {
     return "Fill this field";
@@ -63,10 +62,8 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     setLoginError("");
-
     const emailError = validateEmail(email);
     const passwordError = validatePassword(password);
-
     if (emailError || passwordError) {
       setErrors({
         email: emailError,
@@ -74,26 +71,18 @@ export default function LoginScreen() {
       });
       return;
     }
-
     setIsLoading(true);
     try {
-      // Simulasi login sukses
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      const userToken = "dummy-token"; // Token dummy
-
+      const userToken = "dummy-token";
       if (rememberMe) {
         await AsyncStorage.setItem("userToken", userToken);
       } else {
         await AsyncStorage.removeItem("userToken");
       }
-
-      // Log successful login to the console
       console.log("Login successful! User token:", userToken);
-
       router.replace("/(tabs)/home");
     } catch (error) {
-      // Meskipun ini tidak akan pernah dieksekusi dengan logika di atas,
-      // ini tetap merupakan praktik yang baik untuk menanganinya
       setLoginError("Login failed. Please try again.");
       console.error("Login failed:", error);
     } finally {
@@ -137,7 +126,9 @@ export default function LoginScreen() {
               onFocus={() => setFocusedInput("email")}
               onBlur={() => setFocusedInput(null)}
             />
-            {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
+            {errors.email ? (
+              <Text style={styles.errorText}>{errors.email}</Text>
+            ) : null}
           </View>
 
           {/* Password Input */}
@@ -163,7 +154,9 @@ export default function LoginScreen() {
                 onFocus={() => setFocusedInput("password")}
                 onBlur={() => setFocusedInput(null)}
               />
-              <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+              <TouchableOpacity
+                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+              >
                 <Ionicons
                   name={isPasswordVisible ? "eye-off" : "eye"}
                   size={24}
@@ -172,18 +165,29 @@ export default function LoginScreen() {
                 />
               </TouchableOpacity>
             </View>
-            {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
+            {errors.password ? (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            ) : null}
           </View>
 
-          {/* Remember Me Checkbox */}
-          <View style={styles.rememberMeContainer}>
-            <Checkbox
-              style={styles.checkbox}
-              value={rememberMe}
-              onValueChange={setRememberMe}
-              color={rememberMe ? Colors.primary : undefined}
-            />
-            <Text style={styles.rememberMeLabel}>Keep me Signed in</Text>
+          {/* --- PERUBAHAN STRUKTUR JSX DI SINI --- */}
+          <View style={styles.optionsContainer}>
+            {/* Bagian Kiri: Remember Me */}
+            <View style={styles.rememberMeContainer}>
+              <Checkbox
+                style={styles.checkbox}
+                value={rememberMe}
+                onValueChange={setRememberMe}
+                color={rememberMe ? Colors.primary : undefined}
+              />
+              <Text style={styles.rememberMeLabel}>Keep me Signed in</Text>
+            </View>
+            {/* Bagian Kanan: Forgot Password */}
+            <TouchableOpacity
+              onPress={() => router.push("/(auth)/forgot-password")}
+            >
+              <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+            </TouchableOpacity>
           </View>
 
           {/* Sign In Button */}
@@ -192,31 +196,17 @@ export default function LoginScreen() {
             onPress={handleLogin}
             disabled={isLoading}
           >
-            {isLoading ? <ActivityIndicator color={Colors.white} /> : <Text style={styles.connectButtonText}>Sign In</Text>}
+            {isLoading ? (
+              <ActivityIndicator color={Colors.white} />
+            ) : (
+              <Text style={styles.connectButtonText}>Sign In</Text>
+            )}
           </TouchableOpacity>
-          {loginError ? <Text style={styles.loginErrorText}>{loginError}</Text> : null}
+          {loginError ? (
+            <Text style={styles.loginErrorText}>{loginError}</Text>
+          ) : null}
 
-          {/* Forgot Password Link */}
-          <TouchableOpacity
-            style={styles.forgotPasswordLink}
-            onPress={() => router.push("/(auth)/forgot-password")}
-          >
-            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-          </TouchableOpacity>
-
-          {/* Sign Up Link */}
-          <View style={styles.footerContainer}>
-            <Text style={styles.footerText}>
-              Don&apos;t have any account?
-              <Text
-                style={styles.signUpText}
-                onPress={() => router.push("/(auth)/register")}
-              >
-                {" "}
-                Sign Up
-              </Text>
-            </Text>
-          </View>
+          {/* Footer "Don't have an account?" dipindahkan ke sini */}
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -248,9 +238,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: Colors.primary,
     textAlign: "center",
-    textShadowColor: "rgba(0, 0, 0, 0.4)",
-    textShadowOffset: { width: 1.5, height: 1.5 },
-    textShadowRadius: 2,
   },
   subtitle: {
     fontFamily: "Poppins-ExtraLight",
@@ -288,11 +275,6 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Regular",
     color: Colors.text,
     backgroundColor: Colors.white,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
   },
   passwordWrapper: {
     flexDirection: "row",
@@ -301,11 +283,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     borderRadius: 10,
     backgroundColor: Colors.white,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
   },
   passwordInput: {
     flex: 1,
@@ -318,10 +295,17 @@ const styles = StyleSheet.create({
   eyeIcon: {
     paddingHorizontal: 10,
   },
+  // --- STYLE BARU DAN PERUBAHAN DI BAWAH INI ---
+  optionsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 30, // Jarak ke tombol Sign In
+  },
   rememberMeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 30,
+    flexDirection: "row",
+    alignItems: "center",
+    // Margin Bottom dihapus dari sini
   },
   rememberMeLabel: {
     fontFamily: "Roboto-Regular",
@@ -329,25 +313,11 @@ const styles = StyleSheet.create({
     color: Colors.textLight,
   },
   checkbox: {
-    marginRight: 12,
-  },
-  checkboxLabel: {
-    fontFamily: "Roboto-Regular",
-    fontSize: 12,
-    color: Colors.textLight,
-    lineHeight: 18,
-  },
-  linkText: {
-    color: Colors.primary,
-    fontFamily: "Roboto-Medium",
-  },
-  forgotPasswordLink: {
-    alignItems: 'center',
-    marginTop: 50,
+    marginRight: 8,
   },
   forgotPasswordText: {
     fontFamily: "Roboto-Regular",
-    fontSize: 14,
+    fontSize: 12, // Ukuran font disamakan dengan "Keep me signed in"
     color: Colors.primary,
   },
   connectButton: {
@@ -363,20 +333,6 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-SemiBold",
     fontSize: 18,
     color: Colors.white,
-  },
-  footerContainer: {
-    marginTop: 25,
-    alignItems: "center",
-  },
-  footerText: {
-    fontSize: 15,
-    fontFamily: "Roboto-Regular",
-    color: Colors.textLight,
-  },
-  signUpText: {
-    fontSize: 15,
-    fontFamily: "Roboto-Medium",
-    color: Colors.primary,
   },
   inputFocused: {
     borderColor: Colors.primary,
@@ -396,7 +352,7 @@ const styles = StyleSheet.create({
     color: Colors.redDot,
     fontFamily: "Roboto-Medium",
     fontSize: 14,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 15,
   },
 });
