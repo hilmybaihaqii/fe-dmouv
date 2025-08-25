@@ -1,13 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
-  Image,
   LayoutAnimation,
   Platform,
-  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
@@ -15,12 +12,13 @@ import {
   UIManager,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context"; // <<< 1. Impor
 import { fetchDeviceStatus, updateLampState } from "../api/api";
+import LampIcon from "../assets/images/led.svg";
 import CustomSwitch from "../components/CustomSwitch";
 import { Colors } from "../constants/Colors";
 import { useLamp } from "../context/LampContext";
 
-// Enable LayoutAnimation for Android
 if (
   Platform.OS === "android" &&
   UIManager.setLayoutAnimationEnabledExperimental
@@ -28,11 +26,9 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-// --- Status Types ---
 type PersonStatus = "detected" | "not-detected";
 type LightStatus = "on" | "off";
 
-// --- Status Item Component ---
 const StatusItem: React.FC<{
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
@@ -48,15 +44,14 @@ const StatusItem: React.FC<{
   </View>
 );
 
-// --- Main Component ---
 export default function LampControlScreen() {
+  const insets = useSafeAreaInsets(); // <<< 2. Gunakan hook
   const { isAutoMode, setIsAutoMode } = useLamp();
   const [lampStatus, setLampStatus] = useState<LightStatus>("off");
   const [personStatus, setPersonStatus] =
     useState<PersonStatus>("not-detected");
   const [isLoading, setIsLoading] = useState(true);
 
-  // --- Effect for Initial Fetch & Interval ---
   useEffect(() => {
     const getInitialStatus = async () => {
       try {
@@ -90,7 +85,6 @@ export default function LampControlScreen() {
     return () => clearInterval(intervalId);
   }, [setIsAutoMode, personStatus]);
 
-  // --- Effect for Automatic Mode Logic ---
   useEffect(() => {
     if (isLoading) return;
 
@@ -111,7 +105,6 @@ export default function LampControlScreen() {
     }
   }, [personStatus, isAutoMode, isLoading, lampStatus]);
 
-  // --- Button Handlers ---
   const handleAutoModeToggle = async () => {
     const newMode = !isAutoMode;
     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
@@ -121,7 +114,7 @@ export default function LampControlScreen() {
     } catch (error) {
       console.error("Update auto mode failed:", error);
       Alert.alert("Error", "Failed to update automatic mode.");
-      setIsAutoMode(!newMode); // Rollback state on failure
+      setIsAutoMode(!newMode);
     }
   };
 
@@ -135,59 +128,47 @@ export default function LampControlScreen() {
     } catch (error) {
       console.error("Update lamp status failed:", error);
       Alert.alert("Error", "Failed to update lamp status.");
-      setLampStatus(lampStatus); // Rollback state on failure
+      setLampStatus(lampStatus);
     }
   };
 
   const isLampOn = lampStatus === "on";
 
-  // --- Loading View ---
   if (isLoading) {
     return (
-      <LinearGradient
-        colors={[Colors.secondary, Colors.background]}
-        style={styles.centered}
-      >
+      <View style={styles.centered}>
         <ActivityIndicator size="large" color={Colors.white} />
         <Text style={styles.loadingText}>Loading Status...</Text>
-      </LinearGradient>
+      </View>
     );
   }
 
-  // --- Main View ---
   return (
-    <LinearGradient
-      colors={[Colors.secondary, Colors.background]}
-      style={styles.fullScreenContainer}
-    >
+    // <<< 3. Terapkan paddingTop dinamis di sini
+    <View style={[styles.fullScreenContainer, { paddingTop: insets.top + 60 }]}>
       <StatusBar
         barStyle="dark-content"
         backgroundColor="transparent"
         translucent
       />
-      <SafeAreaView style={styles.safeArea}>
-        {/* Top Section for Lamp */}
-        <View style={styles.topContainer}>
-          <Text style={styles.headerTitle}>Smart Lamp</Text>
-          <Text style={styles.headerSubtitle}>Control your smart lighting</Text>
-          <View style={styles.lampImageContainer}>
-            <Image
-              source={require("../assets/images/lampdua.svg")} // Make sure this path is correct
-              style={[
-                styles.lampImage,
-                {
-                  tintColor: isLampOn
-                    ? Colors.lampOnColor
-                    : Colors.lampOffColor,
-                },
-              ]}
-              resizeMode="contain"
-            />
-          </View>
-        </View>
+      {/* SafeAreaView dihapus karena padding sudah diatur */}
 
-        {/* Control Card */}
-        <View style={styles.controlCard}>
+      {/* Top Section for Lamp */}
+      <View style={styles.topContainer}>
+        <Text style={styles.headerTitle}>Smart Lamp</Text>
+        <Text style={styles.headerSubtitle}>Control your smart lighting</Text>
+        <View style={styles.lampImageContainer}>
+          <LampIcon
+            width="100%"
+            height="100%"
+            fill={isLampOn ? Colors.lampOnColor : Colors.lampOffColor}
+          />
+        </View>
+      </View>
+
+      {/* Control Card */}
+      <View style={styles.controlCard}>
+        <View style={styles.controlCardContent}>
           <View style={styles.dragger} />
 
           {/* Power Button */}
@@ -250,32 +231,28 @@ export default function LampControlScreen() {
             />
           </View>
         </View>
-      </SafeAreaView>
-    </LinearGradient>
+      </View>
+    </View>
   );
 }
 
-// --- Stylesheet ---
 const styles = StyleSheet.create({
   fullScreenContainer: {
     flex: 1,
+    backgroundColor: Colors.secondary,
   },
-  safeArea: {
-    flex: 1,
-    justifyContent: "flex-end",
-  },
+  // safeArea style tidak lagi digunakan
   centered: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: Colors.secondary,
   },
   loadingText: {
     marginTop: 10,
     color: Colors.white,
     fontSize: 16,
   },
-
-  // Top (Blue) Section
   topContainer: {
     flex: 1,
     alignItems: "center",
@@ -283,41 +260,47 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   headerTitle: {
-    fontSize: 32,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 25,
     fontWeight: "bold",
     color: Colors.white,
-    marginBottom: 4,
+    marginTop: 20,
+    textShadowColor: "rgba(0, 0, 0, 0.2)",
+    textShadowOffset: { width: 1, height: 2 },
+    textShadowRadius: 3,
   },
   headerSubtitle: {
-    fontSize: 16,
+    fontFamily: "Poppins-Regular",
+    fontSize: 15,
     color: Colors.textLight,
+    marginTop: 2,
   },
   lampImageContainer: {
     width: 200,
     height: 200,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 10,
+    marginBottom: 20,
+    padding: 15,
   },
-  lampImage: {
-    width: "100%",
-    height: "100%",
-  },
-
-  // Bottom (White) Control Card
   controlCard: {
     backgroundColor: Colors.white,
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    paddingHorizontal: 25,
-    paddingTop: 20,
-    paddingBottom: 30, // Added padding for bottom
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -5 },
     shadowOpacity: 0.1,
     shadowRadius: 15,
     elevation: 10,
+  },
+  controlCardContent: {
+    width: "100%",
+    alignItems: "center",
+    paddingHorizontal: 25,
+    paddingTop: 20,
+    paddingBottom: 80,
   },
   dragger: {
     width: 50,
@@ -326,8 +309,6 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     marginBottom: 25,
   },
-
-  // Power Button
   powerButton: {
     width: 80,
     height: 80,
@@ -345,6 +326,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.white,
   },
   lampStatus: {
+    fontFamily: "Poppins-SemiBold",
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 25,
@@ -355,13 +337,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.border,
     marginBottom: 20,
   },
-
-  // Status Container
   statusContainer: {
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-around",
-    backgroundColor: "#F7F9FC",
+    backgroundColor: "#F4F3F3",
     borderRadius: 15,
     padding: 15,
     marginBottom: 20,
@@ -375,11 +355,13 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   statusLabel: {
+    fontFamily: "Poppins-Regular",
     fontSize: 14,
     color: Colors.textLight,
   },
   statusValue: {
-    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 15,
     fontWeight: "bold",
     marginTop: 4,
   },
@@ -388,24 +370,24 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.border,
     marginHorizontal: 10,
   },
-
-  // Automatic Mode
   autoModeContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#F7F9FC",
+    backgroundColor: "#F4F3F3",
     borderRadius: 15,
     padding: 20,
     width: "100%",
   },
   autoModeTitle: {
-    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 15,
     fontWeight: "600",
     color: Colors.text,
   },
   autoModeSubtitle: {
-    fontSize: 13,
+    fontFamily: "Poppins-Regular",
+    fontSize: 12,
     color: Colors.textLight,
     marginTop: 2,
   },

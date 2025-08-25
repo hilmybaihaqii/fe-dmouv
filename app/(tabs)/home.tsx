@@ -12,9 +12,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import DeviceCard from "../../components/home/DeviceCard";
 import { Colors } from "../../constants/Colors";
 
-// Import SVG sebagai komponen React
-import FanIcon from "../../assets/images/lampdua.svg"; // Pastikan Anda punya ikon ini
-import LamphomeIcon from "../../assets/images/lamphome.svg";
+import FanIcon from "../../assets/images/fan.svg";
+import LamphomeIcon from "../../assets/images/led.svg";
 
 const devices = [
   { id: "1", name: "LED", icon: <LamphomeIcon width={80} height={80} /> },
@@ -29,7 +28,6 @@ export default function HomeScreen() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
 
-  // Hook untuk mendapatkan waktu dan tanggal saat ini
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
@@ -130,9 +128,9 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     backgroundColor: Colors.secondary,
-    height: 330,
-    borderBottomLeftRadius: 50,
-    borderBottomRightRadius: 50,
+    height: 340,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
     paddingHorizontal: 25,
     paddingBottom: 20,
     position: "absolute",
@@ -141,21 +139,21 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 1,
     justifyContent: "space-between",
-    // --- TAMBAHAN: Drop Shadow ---
+
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
     elevation: 8,
   },
   title: {
     fontFamily: "Poppins-Bold",
     fontSize: 26,
     color: Colors.white,
-    marginTop: 60, // Mengurangi margin atas agar tidak terlalu jauh
+    marginTop: 60,
     // --- Properti Shadow untuk Teks ---
     textShadowColor: "rgba(0, 0, 0, 0.25)", // Warna shadow hitam dengan opasitas 75%
     textShadowOffset: { width: 1, height: 2 }, // Posisi shadow sedikit ke kanan bawah
@@ -181,7 +179,8 @@ const styles = StyleSheet.create({
   bottomHeaderContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-end", // Elemen rata bawah
+    alignItems: "flex-end",
+    marginTop: 10,
   },
   tagline: {
     fontFamily: "Poppins-Regular",
@@ -220,6 +219,7 @@ const styles = StyleSheet.create({
   },
   devicesSection: {
     paddingLeft: 25,
+    marginTop: 8,
   },
   sectionTitle: {
     fontFamily: "Poppins-SemiBold",

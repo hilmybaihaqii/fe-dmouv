@@ -25,6 +25,11 @@ export const ChangePasswordModal: React.FC<Props> = ({
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [errors, setErrors] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
 
   const [isCurrentPasswordVisible, setCurrentPasswordVisible] = useState(false);
   const [isNewPasswordVisible, setNewPasswordVisible] = useState(false);
@@ -33,23 +38,39 @@ export const ChangePasswordModal: React.FC<Props> = ({
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
 
   const handleSave = () => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      Alert.alert("Error", "Please fill in all fields.");
-      return;
+    const newErrors = {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    };
+    let hasError = false;
+
+    if (!currentPassword) {
+      newErrors.currentPassword = "Fill this field";
+      hasError = true;
     }
-    if (currentPassword === newPassword) {
-      Alert.alert(
-        "Error",
-        "New password cannot be the same as the current password."
-      );
-      return;
+    if (!newPassword) {
+      newErrors.newPassword = "Fill this field";
+      hasError = true;
+    } else if (newPassword.length < 8) {
+      newErrors.newPassword = "New password must be at least 8 characters long.";
+      hasError = true;
     }
-    if (newPassword.length < 8) {
-      Alert.alert("Error", "New password must be at least 8 characters long.");
-      return;
+    if (!confirmPassword) {
+      newErrors.confirmPassword = "Fill this field";
+      hasError = true;
+    } else if (newPassword !== confirmPassword) {
+      newErrors.confirmPassword = "New passwords do not match.";
+      hasError = true;
     }
-    if (newPassword !== confirmPassword) {
-      Alert.alert("Error", "New passwords do not match.");
+    if (newPassword && currentPassword === newPassword) {
+      newErrors.newPassword = "New password cannot be the same as the current one.";
+      hasError = true;
+    }
+
+    setErrors(newErrors);
+
+    if (hasError) {
       return;
     }
 
@@ -62,7 +83,7 @@ export const ChangePasswordModal: React.FC<Props> = ({
           text: "Yes",
           onPress: () => {
             onSubmit({ current: currentPassword, new: newPassword });
-            onClose();
+            handleCloseModal();
           },
         },
       ]
@@ -77,7 +98,15 @@ export const ChangePasswordModal: React.FC<Props> = ({
     setNewPasswordVisible(false);
     setConfirmPasswordVisible(false);
     setFocusedInput(null);
+    setErrors({ currentPassword: "", newPassword: "", confirmPassword: "" });
     onClose();
+  };
+
+  const clearErrorsOnChange = (inputName: string) => {
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [inputName]: "",
+    }));
   };
 
   return (
@@ -92,109 +121,119 @@ export const ChangePasswordModal: React.FC<Props> = ({
           <Text style={styles.modalTitle}>Change Password</Text>
 
           {/* Current Password Input */}
-          <View
-            style={[
-              styles.inputGroup,
-              {
-                borderColor:
-                  focusedInput === "currentPassword"
-                    ? Colors.primary
-                    : Colors.border,
-              },
-            ]}
-          >
-            <TextInput
-              style={styles.input}
-              placeholder="Current Password"
-              placeholderTextColor={Colors.textLight}
-              secureTextEntry={!isCurrentPasswordVisible}
-              value={currentPassword}
-              onChangeText={setCurrentPassword}
-              onFocus={() => setFocusedInput("currentPassword")}
-              onBlur={() => setFocusedInput(null)}
-            />
-            <TouchableOpacity
-              onPress={() =>
-                setCurrentPasswordVisible(!isCurrentPasswordVisible)
-              }
-              style={styles.eyeIcon}
+          <View style={styles.inputContainer}>
+            <View
+              style={[
+                styles.inputGroup,
+                focusedInput === "currentPassword" && styles.inputFocused,
+                !!errors.currentPassword && styles.inputError,
+              ]}
             >
-              <Ionicons
-                name={isCurrentPasswordVisible ? "eye-off" : "eye"}
-                size={24}
-                color={Colors.primary}
+              <TextInput
+                style={styles.input}
+                placeholder="Current Password"
+                placeholderTextColor={Colors.textLight}
+                secureTextEntry={!isCurrentPasswordVisible}
+                value={currentPassword}
+                onChangeText={(text) => {
+                  setCurrentPassword(text);
+                  clearErrorsOnChange("currentPassword");
+                }}
+                onFocus={() => setFocusedInput("currentPassword")}
+                onBlur={() => setFocusedInput(null)}
               />
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setCurrentPasswordVisible(!isCurrentPasswordVisible)}
+                style={styles.eyeIcon}
+              >
+                <Ionicons
+                  name={isCurrentPasswordVisible ? "eye-off" : "eye"}
+                  size={24}
+                  color={Colors.primary}
+                />
+              </TouchableOpacity>
+            </View>
+            {errors.currentPassword ? (
+              <Text style={styles.errorText}>{errors.currentPassword}</Text>
+            ) : null}
           </View>
 
           {/* New Password Input */}
-          <View
-            style={[
-              styles.inputGroup,
-              {
-                borderColor:
-                  focusedInput === "newPassword"
-                    ? Colors.primary
-                    : Colors.border,
-              },
-            ]}
-          >
-            <TextInput
-              style={styles.input}
-              placeholder="New Password (min. 8 characters)"
-              placeholderTextColor={Colors.textLight}
-              secureTextEntry={!isNewPasswordVisible}
-              value={newPassword}
-              onChangeText={setNewPassword}
-              onFocus={() => setFocusedInput("newPassword")}
-              onBlur={() => setFocusedInput(null)}
-            />
-            <TouchableOpacity
-              onPress={() => setNewPasswordVisible(!isNewPasswordVisible)}
-              style={styles.eyeIcon}
+          <View style={styles.inputContainer}>
+            <View
+              style={[
+                styles.inputGroup,
+                focusedInput === "newPassword" && styles.inputFocused,
+                !!errors.newPassword && styles.inputError,
+              ]}
             >
-              <Ionicons
-                name={isNewPasswordVisible ? "eye-off" : "eye"}
-                size={24}
-                color={Colors.primary}
+              <TextInput
+                style={styles.input}
+                placeholder="New Password (min. 8 characters)"
+                placeholderTextColor={Colors.textLight}
+                secureTextEntry={!isNewPasswordVisible}
+                value={newPassword}
+                onChangeText={(text) => {
+                  setNewPassword(text);
+                  clearErrorsOnChange("newPassword");
+                }}
+                onFocus={() => setFocusedInput("newPassword")}
+                onBlur={() => setFocusedInput(null)}
               />
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setNewPasswordVisible(!isNewPasswordVisible)}
+                style={styles.eyeIcon}
+              >
+                <Ionicons
+                  name={isNewPasswordVisible ? "eye-off" : "eye"}
+                  size={24}
+                  color={Colors.primary}
+                />
+              </TouchableOpacity>
+            </View>
+            {errors.newPassword ? (
+              <Text style={styles.errorText}>{errors.newPassword}</Text>
+            ) : null}
           </View>
 
           {/* Confirm New Password Input */}
-          <View
-            style={[
-              styles.inputGroup,
-              {
-                borderColor:
-                  focusedInput === "confirmPassword"
-                    ? Colors.primary
-                    : Colors.border,
-              },
-            ]}
-          >
-            <TextInput
-              style={styles.input}
-              placeholder="Confirm New Password"
-              placeholderTextColor={Colors.textLight}
-              secureTextEntry={!isConfirmPasswordVisible}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              onFocus={() => setFocusedInput("confirmPassword")}
-              onBlur={() => setFocusedInput(null)}
-            />
-            <TouchableOpacity
-              onPress={() =>
-                setConfirmPasswordVisible(!isConfirmPasswordVisible)
-              }
-              style={styles.eyeIcon}
+          <View style={styles.inputContainer}>
+            <View
+              style={[
+                styles.inputGroup,
+                focusedInput === "confirmPassword" && styles.inputFocused,
+                !!errors.confirmPassword && styles.inputError,
+              ]}
             >
-              <Ionicons
-                name={isConfirmPasswordVisible ? "eye-off" : "eye"}
-                size={24}
-                color={Colors.primary}
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm New Password"
+                placeholderTextColor={Colors.textLight}
+                secureTextEntry={!isConfirmPasswordVisible}
+                value={confirmPassword}
+                onChangeText={(text) => {
+                  setConfirmPassword(text);
+                  clearErrorsOnChange("confirmPassword");
+                }}
+                onFocus={() => setFocusedInput("confirmPassword")}
+                onBlur={() => setFocusedInput(null)}
               />
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  setConfirmPasswordVisible(!isConfirmPasswordVisible)
+                }
+                style={styles.eyeIcon}
+              >
+                <Ionicons
+                  name={isConfirmPasswordVisible ? "eye-off" : "eye"}
+                  size={24}
+                  color={Colors.primary}
+                />
+              </TouchableOpacity>
+            </View>
+            {errors.confirmPassword ? (
+              <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+            ) : null}
           </View>
 
           {/* Tombol-tombol Aksi (Horizontal) */}
@@ -240,14 +279,31 @@ const styles = StyleSheet.create({
     marginBottom: 25,
     color: Colors.primary,
   },
+  inputContainer: {
+    width: "100%",
+    marginBottom: 15,
+  },
   inputGroup: {
     width: "100%",
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
     borderRadius: 10,
-    marginBottom: 15,
     backgroundColor: Colors.white,
+  },
+  inputFocused: {
+    borderColor: Colors.primary,
+    borderWidth: 1.5,
+  },
+  inputError: {
+    borderColor: Colors.redDot,
+  },
+  errorText: {
+    color: Colors.redDot,
+    fontFamily: "Roboto-Regular",
+    fontSize: 12,
+    marginTop: 5,
+    paddingLeft: 4,
   },
   input: {
     flex: 1,

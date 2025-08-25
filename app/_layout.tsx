@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
-import { Stack } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
+import React, { useEffect } from "react";
 import {
   StatusBar,
   StyleSheet,
@@ -12,7 +13,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "../constants/Colors";
 import { FanProvider } from "../context/FanContext"; // <<< 1. Impor FanProvider
 import { LampProvider } from "../context/LampContext";
-import { useCachedResources } from "../hooks/useCachedResources";
+import { useLoadFonts } from "../hooks/useLoadFonts";
+
+SplashScreen.preventAutoHideAsync();
 
 const Header = ({ options, navigation, route }: NativeStackHeaderProps) => {
   const insets = useSafeAreaInsets();
@@ -109,9 +112,15 @@ const headerStyles = StyleSheet.create({
 });
 
 export default function RootLayout() {
-  const isLoadingComplete = useCachedResources();
+  const [fontsLoaded, fontError] = useLoadFonts();
 
-  if (!isLoadingComplete) {
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
+
+  if (!fontsLoaded && !fontError) {
     return null;
   }
 
@@ -129,7 +138,14 @@ export default function RootLayout() {
           }}
         >
           <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="(auth)"
+            options={{
+              headerShown: false,
+              animation: "fade",
+              animationDuration: 500,
+            }}
+          />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="account-settings" options={{ title: "" }} />
           <Stack.Screen name="lamp-control" options={{ title: "" }} />

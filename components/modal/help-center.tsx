@@ -1,7 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
-  Image,
   Linking,
   Modal,
   StyleSheet,
@@ -22,58 +21,27 @@ const HelpCenterModal: React.FC<HelpCenterModalProps> = ({
 }) => {
   return (
     <Modal
-      animationType="fade" // Menggunakan fade untuk transisi yang lebih halus
+      animationType="fade"
       transparent={true}
       visible={visible}
       onRequestClose={onClose}
     >
       <View style={styles.modalBackground}>
         <View style={styles.modalContent}>
-          {/* Tombol Tutup di dalam modal content */}
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Ionicons name="close-circle" size={32} color={Colors.textLight} />
-          </TouchableOpacity>
-
           <Text style={styles.modalTitle}>Help Center</Text>
           <Text style={styles.modalText}>
             How can we assist you? Here you can find answers to frequently asked
             questions.
           </Text>
 
-          {/* Container Ikon Sosial */}
-          <View style={styles.iconContainer}>
-            {/* Instagram Link Icon */}
-            <TouchableOpacity
-              onPress={() =>
-                Linking.openURL("https://www.instagram.com/cpslaboratory/")
-              }
-            >
-              <Image
-                source={require("../../assets/images/D.svg")}
-                style={styles.icon}
-              />
-            </TouchableOpacity>
-
-            {/* OA Line Link Icon */}
-            <TouchableOpacity
-              onPress={() => Linking.openURL("https://line.me/ti/p/~jsj1167b")}
-            >
-              <Image
-                source={require("../../assets/images/D.svg")}
-                style={styles.icon}
-              />
-            </TouchableOpacity>
-
-            {/* Website Link Icon */}
-            <TouchableOpacity
-              onPress={() => Linking.openURL("https://www.cpslaboratory.com/")}
-            >
-              <Image
-                source={require("../../assets/images/D.svg")}
-                style={styles.icon}
-              />
-            </TouchableOpacity>
-          </View>
+          {/* Bagian Contact Us dengan ikon Instagram dan teks @cpslaboratory */}
+          <TouchableOpacity
+            style={styles.contactContainer}
+            onPress={() => Linking.openURL("https://www.instagram.com/cpslaboratory/")}
+          >
+            <Ionicons name="logo-instagram" size={28} color="#E4405F" style={styles.instagramIcon} />
+            <Text style={styles.contactText}>@cpslaboratory</Text>
+          </TouchableOpacity>
 
           {/* Tombol Close Utama */}
           <TouchableOpacity style={styles.mainCloseButton} onPress={onClose}>
@@ -90,14 +58,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.6)", // Latar belakang yang lebih gelap untuk kontras
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
   },
   modalContent: {
     backgroundColor: Colors.white,
-    borderRadius: 20, // Radius lebih besar agar konsisten
+    borderRadius: 20,
     padding: 25,
-    width: "85%", // Lebar disesuaikan
-    maxWidth: 350, // Batas lebar maksimum
+    width: "85%",
+    maxWidth: 350,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -112,49 +80,61 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 10,
     right: 10,
-    zIndex: 1, // Pastikan tombol di atas konten lain
-    padding: 5, // Tambahkan padding agar lebih mudah disentuh
+    zIndex: 1,
+    padding: 5,
   },
   modalTitle: {
-    fontFamily: "Poppins-Bold", // Menggunakan Poppins-Bold
+    fontFamily: "Poppins-Bold",
     fontSize: 22,
     color: Colors.primary,
     marginBottom: 10,
     textAlign: "center",
-    marginTop: 10, // Jarak dari tombol close
+    marginTop: 10,
   },
   modalText: {
-    fontFamily: "Roboto-Regular", // Menggunakan Roboto-Regular
-    fontSize: 16,
-    color: Colors.textLight, // Menggunakan Colors.textLight
+    fontFamily: "Roboto-Regular",
+    fontSize: 15,
+    color: Colors.textLight,
     marginVertical: 10,
     textAlign: "center",
-    lineHeight: 24, // Menambahkan lineHeight untuk keterbacaan
+    lineHeight: 24,
   },
-  iconContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around", // Menggunakan space-around untuk distribusi yang merata
-    width: "100%",
-    marginVertical: 20,
+  contactContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+    backgroundColor: Colors.cardgray,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    width: 'auto',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  icon: {
-    width: 50, // Ukuran ikon diperbesar sedikit
-    height: 50,
-    resizeMode: "contain",
+  instagramIcon: {
+    marginRight: 10,
+  },
+  contactText: {
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 18,
+    color: Colors.primary,
   },
   mainCloseButton: {
-    // Nama style yang lebih jelas
     backgroundColor: Colors.primary,
-    paddingVertical: 15, // Konsisten dengan tombol lain
-    borderRadius: 15, // Konsisten dengan tombol lain
+    paddingVertical: 15,
+    borderRadius: 15,
     width: "100%",
     alignItems: "center",
     marginTop: 20,
   },
   mainCloseButtonText: {
     color: Colors.white,
-    fontSize: 18, // Konsisten dengan tombol lain
-    fontFamily: "Poppins-SemiBold", // Menggunakan Poppins-Bold
+    fontSize: 18,
+    fontFamily: "Poppins-SemiBold",
   },
 });
 

@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { default as Checkbox } from "expo-checkbox";
+import Checkbox from "expo-checkbox";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -13,43 +13,92 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Colors } from "../../constants/Colors";
-// ✅ Import SVG sebagai komponen
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import FullLogo from "../../assets/images/fulldmouv.svg";
+import { Colors } from "../../constants/Colors";
 
+// --- VALIDATION FUNCTIONS ---
+const validateEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email) {
+    return "Fill this field";
+  }
+  if (!emailRegex.test(email)) {
+    return "Please enter a valid email address";
+  }
+  return "";
+};
+
+const validatePassword = (password: string) => {
+  if (!password) {
+    return "Fill this field";
+  }
+  if (password.length < 8) {
+    return "Password must be at least 8 characters";
+  }
+  return "";
+};
+
+// --- MAIN COMPONENT ---
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
-
-  // State baru untuk melacak input mana yang sedang fokus (active)
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
+  const [loginError, setLoginError] = useState("");
+
+  const clearErrorsOnChange = () => {
+    setLoginError("");
+    if (errors.email || errors.password) {
+      setErrors({ email: "", password: "" });
+    }
+  };
 
   const handleLogin = async () => {
-    // Validasi input
-    if (!email || !password) {
-      alert("Please fill in all fields.");
+    setLoginError("");
+
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+
+    if (emailError || passwordError) {
+      setErrors({
+        email: emailError,
+        password: passwordError,
+      });
       return;
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      alert("Please enter a valid email address.");
-      return;
-    }
-    if (!isChecked) {
-      alert(
-        "You must agree to the Terms Conditions and Privacy Policy to continue."
-      );
-      return;
-    }
+
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log("Logging in with:", { email, password });
-    setIsLoading(false);
-    router.push("/(tabs)/home");
+    try {
+      // Simulasi login sukses
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const userToken = "dummy-token"; // Token dummy
+
+      if (rememberMe) {
+        await AsyncStorage.setItem("userToken", userToken);
+      } else {
+        await AsyncStorage.removeItem("userToken");
+      }
+
+      // Log successful login to the console
+      console.log("Login successful! User token:", userToken);
+
+      router.replace("/(tabs)/home");
+    } catch (error) {
+      // Meskipun ini tidak akan pernah dieksekusi dengan logika di atas,
+      // ini tetap merupakan praktik yang baik untuk menanganinya
+      setLoginError("Login failed. Please try again.");
+      console.error("Login failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -59,59 +108,62 @@ export default function LoginScreen() {
         style={styles.keyboardAvoidingContainer}
       >
         <View style={styles.headerContainer}>
-          <FullLogo width={180} height={60} style={styles.logo} />
+          <FullLogo width={306} height={66} style={styles.logo} />
           <Text style={styles.title}>Welcome to D&apos;mouv</Text>
-          <Text style={styles.subtitle}>Your journey begins here.</Text>
+          <Text style={styles.subtitle}>
+            {"Your smart way to sense, react,\nand save energy"}
+          </Text>
         </View>
 
         <View style={styles.card}>
+          {/* Email Input */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Email</Text>
             <TextInput
               style={[
                 styles.input,
-                {
-                  borderColor:
-                    focusedInput === "email" ? Colors.primary : Colors.border,
-                },
+                focusedInput === "email" && styles.inputFocused,
+                !!errors.email && styles.inputError,
               ]}
               placeholder="Enter your email"
               value={email}
-              onChangeText={setEmail}
+              onChangeText={(text) => {
+                setEmail(text);
+                clearErrorsOnChange();
+              }}
               keyboardType="email-address"
               autoCapitalize="none"
               placeholderTextColor={Colors.textLight}
               onFocus={() => setFocusedInput("email")}
               onBlur={() => setFocusedInput(null)}
             />
+            {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
           </View>
 
+          {/* Password Input */}
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Password</Text>
             <View
               style={[
                 styles.passwordWrapper,
-                {
-                  borderColor:
-                    focusedInput === "password"
-                      ? Colors.primary
-                      : Colors.border,
-                },
+                focusedInput === "password" && styles.inputFocused,
+                !!errors.password && styles.inputError,
               ]}
             >
               <TextInput
                 style={styles.passwordInput}
                 placeholder="Password"
                 value={password}
-                onChangeText={setPassword}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  clearErrorsOnChange();
+                }}
                 secureTextEntry={!isPasswordVisible}
                 placeholderTextColor={Colors.textLight}
                 onFocus={() => setFocusedInput("password")}
                 onBlur={() => setFocusedInput(null)}
               />
-              <TouchableOpacity
-                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-              >
+              <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
                 <Ionicons
                   name={isPasswordVisible ? "eye-off" : "eye"}
                   size={24}
@@ -120,41 +172,31 @@ export default function LoginScreen() {
                 />
               </TouchableOpacity>
             </View>
+            {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
           </View>
 
-          <View style={styles.checkboxContainer}>
+          {/* Remember Me Checkbox */}
+          <View style={styles.rememberMeContainer}>
             <Checkbox
               style={styles.checkbox}
-              value={isChecked}
-              onValueChange={setIsChecked}
-              color={isChecked ? Colors.primary : undefined}
+              value={rememberMe}
+              onValueChange={setRememberMe}
+              color={rememberMe ? Colors.primary : undefined}
             />
-            <View style={{ flex: 1 }}>
-              <TouchableOpacity
-                onPress={() => router.push("/(auth)/privacy-policy")}
-              >
-                <Text style={styles.checkboxLabel}>
-                  I agree to the{" "}
-                  <Text style={styles.linkText}>Terms & Conditions</Text>
-                  {" and "}
-                  <Text style={styles.linkText}>Privacy Policy</Text>
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <Text style={styles.rememberMeLabel}>Keep me Signed in</Text>
           </View>
 
+          {/* Sign In Button */}
           <TouchableOpacity
             style={[styles.connectButton, isLoading && styles.buttonDisabled]}
             onPress={handleLogin}
             disabled={isLoading}
           >
-            {isLoading ? (
-              <ActivityIndicator color={Colors.white} />
-            ) : (
-              <Text style={styles.connectButtonText}>Sign In</Text>
-            )}
+            {isLoading ? <ActivityIndicator color={Colors.white} /> : <Text style={styles.connectButtonText}>Sign In</Text>}
           </TouchableOpacity>
+          {loginError ? <Text style={styles.loginErrorText}>{loginError}</Text> : null}
 
+          {/* Forgot Password Link */}
           <TouchableOpacity
             style={styles.forgotPasswordLink}
             onPress={() => router.push("/(auth)/forgot-password")}
@@ -162,6 +204,7 @@ export default function LoginScreen() {
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
 
+          {/* Sign Up Link */}
           <View style={styles.footerContainer}>
             <Text style={styles.footerText}>
               Don&apos;t have any account?
@@ -183,7 +226,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
+    backgroundColor: Colors.white,
   },
   keyboardAvoidingContainer: {
     flex: 1,
@@ -201,30 +244,33 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-Medium",
     fontSize: 22,
     color: Colors.primary,
     textAlign: "center",
+    textShadowColor: "rgba(0, 0, 0, 0.4)",
+    textShadowOffset: { width: 1.5, height: 1.5 },
+    textShadowRadius: 2,
   },
   subtitle: {
-    fontFamily: "Roboto-Regular",
+    fontFamily: "Poppins-ExtraLight",
     fontSize: 16,
-    color: Colors.textLight,
+    color: Colors.primary,
     textAlign: "center",
     marginTop: 8,
   },
   card: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.cardgray,
     borderRadius: 20,
     padding: 25,
-    elevation: 5,
+    elevation: 7,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: 15,
   },
   label: {
     fontFamily: "Poppins-SemiBold",
@@ -241,6 +287,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Roboto-Regular",
     color: Colors.text,
+    backgroundColor: Colors.white,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   passwordWrapper: {
     flexDirection: "row",
@@ -248,6 +300,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
     borderRadius: 10,
+    backgroundColor: Colors.white,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   passwordInput: {
     flex: 1,
@@ -260,10 +318,15 @@ const styles = StyleSheet.create({
   eyeIcon: {
     paddingHorizontal: 10,
   },
-  checkboxContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
+  rememberMeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  rememberMeLabel: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 12,
+    color: Colors.textLight,
   },
   checkbox: {
     marginRight: 12,
@@ -278,6 +341,15 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontFamily: "Roboto-Medium",
   },
+  forgotPasswordLink: {
+    alignItems: 'center',
+    marginTop: 50,
+  },
+  forgotPasswordText: {
+    fontFamily: "Roboto-Regular",
+    fontSize: 14,
+    color: Colors.primary,
+  },
   connectButton: {
     backgroundColor: Colors.primary,
     paddingVertical: 15,
@@ -285,25 +357,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonDisabled: {
-    backgroundColor: Colors.secondary,
+    backgroundColor: Colors.primary,
   },
   connectButtonText: {
     fontFamily: "Poppins-SemiBold",
     fontSize: 18,
     color: Colors.white,
   },
-  forgotPasswordLink: {
-    alignItems: "center",
-    marginTop: 20,
-    marginBottom: 10,
-  },
-  forgotPasswordText: {
-    fontFamily: "Roboto-Regular",
-    fontSize: 14,
-    color: Colors.primary,
-  },
   footerContainer: {
-    marginTop: 10,
+    marginTop: 25,
     alignItems: "center",
   },
   footerText: {
@@ -315,5 +377,26 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: "Roboto-Medium",
     color: Colors.primary,
+  },
+  inputFocused: {
+    borderColor: Colors.primary,
+    borderWidth: 1.5,
+  },
+  inputError: {
+    borderColor: Colors.redDot,
+  },
+  errorText: {
+    color: Colors.redDot,
+    fontFamily: "Roboto-Regular",
+    fontSize: 12,
+    marginTop: 5,
+    paddingLeft: 4,
+  },
+  loginErrorText: {
+    color: Colors.redDot,
+    fontFamily: "Roboto-Medium",
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 15,
   },
 });

@@ -24,28 +24,20 @@ export default function TabLayout() {
             const currentRouteName = state.routes[state.index]?.name;
             const isHome = currentRouteName === "home";
 
-            // --- LOGIKA BARU UNTUK WARNA IKON ---
-            // Cek apakah halaman saat ini adalah 'history' atau 'teams'
-            const isSpecialPage =
-              currentRouteName === "history" || currentRouteName === "teams";
-
-            // Tentukan warna ikon: biru dongker untuk halaman spesial, putih untuk lainnya
-            const iconColor = isSpecialPage ? Colors.primary : Colors.white;
-            // --- AKHIR DARI LOGIKA BARU ---
+            // Ikon akan putih di Home, dan biru di halaman lainnya
+            const iconColor = isHome ? Colors.white : Colors.primary;
 
             return (
               <View
                 style={[styles.headerContainer, { paddingTop: insets.top }]}
               >
-                {/* Bagian Kiri: Logo atau Tombol Kembali */}
+                {/* --- PERUBAHAN 1: Logo dipindahkan ke sini --- */}
                 <View style={styles.leftContainer}>
                   {isHome ? (
                     <TouchableOpacity
                       onPress={() => navigation.navigate("home")}
                     >
-                      <View style={{ marginTop: 9 }}>
-                        <LogoD width={37} height={37} />
-                      </View>
+                      <LogoD width={40} height={40} />
                     </TouchableOpacity>
                   ) : (
                     <TouchableOpacity
@@ -55,15 +47,14 @@ export default function TabLayout() {
                           : navigation.navigate("home")
                       }
                     >
-                      {/* Gunakan iconColor untuk tombol kembali */}
                       <Ionicons name="arrow-back" size={30} color={iconColor} />
                     </TouchableOpacity>
                   )}
                 </View>
 
-                {/* Bagian Tengah: Judul Halaman */}
+                {/* --- PERUBAHAN 2: Bagian tengah sekarang kosong di Home --- */}
                 <View style={styles.centerContainer}>
-                  {options.title && (
+                  {!isHome && options.title && (
                     <Text
                       style={[styles.headerTitleText, { color: iconColor }]}
                     >
@@ -72,14 +63,13 @@ export default function TabLayout() {
                   )}
                 </View>
 
-                {/* Bagian Kanan: Notifikasi dan Akun */}
+                {/* Bagian Kanan: Tidak ada perubahan */}
                 <View style={styles.rightContainer}>
                   <TouchableOpacity
                     onPress={() =>
                       navigation.navigate("notifications" as never)
                     }
                   >
-                    {/* Gunakan iconColor untuk notifikasi */}
                     <Ionicons
                       name="notifications-outline"
                       size={29}
@@ -92,7 +82,6 @@ export default function TabLayout() {
                       navigation.navigate("account-settings" as never)
                     }
                   >
-                    {/* Gunakan iconColor untuk profil */}
                     <Ionicons
                       name="person-circle-outline"
                       size={33}
@@ -105,17 +94,16 @@ export default function TabLayout() {
           },
         }}
       >
-        <Tabs.Screen name="home" />
-        <Tabs.Screen name="history" />
-        <Tabs.Screen name="teams" />
-        <Tabs.Screen name="settings" />
+        <Tabs.Screen name="home" options={{ title: "" }} />
+        <Tabs.Screen name="history" options={{ title: "" }} />
+        <Tabs.Screen name="teams" options={{ title: "" }} />
+        <Tabs.Screen name="settings" options={{ title: "" }} />
       </Tabs>
     </LampProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  // Styles tidak diubah sama sekali
   headerContainer: {
     position: "absolute",
     top: 0,
@@ -128,10 +116,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingBottom: 10,
+    height: 110,
   },
   leftContainer: {
     flex: 1,
     alignItems: "flex-start",
+    transform: [{ translateY: 3 }],
   },
   centerContainer: {
     flex: 2,
@@ -143,6 +133,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
+    transform: [{ translateY: 1 }],
   },
   headerTitleText: {
     fontFamily: "Poppins-Bold",
