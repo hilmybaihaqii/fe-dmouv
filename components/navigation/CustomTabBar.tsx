@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     height: 67,
-    borderRadius: 15,
+    borderRadius: 25,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
   blurView: {
     flex: 1,
-    borderRadius: 15,
+    borderRadius: 25,
     overflow: "hidden",
     flexDirection: "row",
   },

@@ -1,22 +1,24 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import {
+  LayoutAnimation,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-  LayoutAnimation,
   UIManager,
+  View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Colors } from "../constants/Colors";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { SwipeListView } from "react-native-swipe-list-view";
+import { Colors } from "../constants/Colors";
 
 // Mengaktifkan LayoutAnimation untuk Android
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
@@ -45,7 +47,7 @@ const userName = "TimRisetCPS";
 
 // --- KOMPONEN UTAMA ---
 export default function NotificationsScreen() {
-  const insets = useSafeAreaInsets();
+  // const insets = useSafeAreaInsets();
   const [activityLogs, setActivityLogs] = useState<LogEntry[]>([]);
   const [currentDate, setCurrentDate] = useState("");
 
@@ -100,10 +102,8 @@ export default function NotificationsScreen() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView
-        style={[
-          styles.container,
-          { paddingTop: insets.top + (Platform.OS === "ios" ? 10 : 20) },
-        ]}
+        style={styles.container}
+        edges={["top", "left", "right"]} // Hanya aktifkan safe area untuk atas, kiri, dan kanan
       >
         <View style={styles.headerFixed}>
           <Text style={styles.title}>Activity Log</Text>
@@ -124,7 +124,11 @@ export default function NotificationsScreen() {
           />
         ) : (
           <View style={styles.emptyContainer}>
-            <Ionicons name="notifications-off-outline" size={60} color={Colors.textLight} />
+            <Ionicons
+              name="notifications-off-outline"
+              size={60}
+              color={Colors.textLight}
+            />
             <Text style={styles.emptyText}>No New Notifications</Text>
             <Text style={styles.emptySubText}>You are all caught up!</Text>
           </View>
@@ -168,7 +172,7 @@ const styles = StyleSheet.create({
   },
   flatListContent: {
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    // paddingBottom: 20,
   },
   itemContainer: {
     backgroundColor: Colors.primary,
@@ -202,17 +206,17 @@ const styles = StyleSheet.create({
   },
   // Style untuk item tersembunyi (swipe)
   rowBack: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "flex-end",
     marginBottom: 12,
   },
   deleteButton: {
     backgroundColor: Colors.redDot,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
     top: 0,
     bottom: 0,
     right: 0,
@@ -221,18 +225,18 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingBottom: 60,
   },
   emptyText: {
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: "Poppins-SemiBold",
     fontSize: 18,
     color: Colors.text,
     marginTop: 20,
   },
   emptySubText: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     fontSize: 14,
     color: Colors.textLight,
     marginTop: 5,
