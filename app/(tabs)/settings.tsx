@@ -9,7 +9,6 @@ import {
   Modal,
   Platform,
   Pressable,
-  // SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
@@ -50,7 +49,21 @@ const daysOfWeek = [
   "Sunday",
 ];
 
-// --- KOMPONEN FORM TERPISAH UNTUK VALIDASI & UI YANG LEBIH BAIK ---
+// Helper function moved here to be reusable
+const timeToMinutes = (timeStr: string) => {
+  const [hours, minutes] = timeStr.split(":").map(Number);
+  if (
+    isNaN(hours) ||
+    isNaN(minutes) ||
+    hours < 0 ||
+    hours > 23 ||
+    minutes < 0 ||
+    minutes > 59
+  )
+    return NaN;
+  return hours * 60 + minutes;
+};
+
 // --- KOMPONEN FORM TERPISAH (VERSI SUDAH DIPERBAIKI) ---
 interface ScheduleFormProps {
   selectedDevice: "lamp" | "fan";
@@ -58,7 +71,6 @@ interface ScheduleFormProps {
   onSubmit: (data: Omit<Schedule, "id">) => void;
 }
 
-// 1. Definisikan komponen dengan nama fungsi yang jelas
 const ScheduleFormComponent = ({
   selectedDevice,
   schedulesForDevice,
@@ -73,20 +85,6 @@ const ScheduleFormComponent = ({
   );
 
   const isSubmitDisabled = !selectedDay || !inputOnTime || !inputOffTime;
-
-  const timeToMinutes = (timeStr: string) => {
-    const [hours, minutes] = timeStr.split(":").map(Number);
-    if (
-      isNaN(hours) ||
-      isNaN(minutes) ||
-      hours < 0 ||
-      hours > 23 ||
-      minutes < 0 ||
-      minutes > 59
-    )
-      return NaN;
-    return hours * 60 + minutes;
-  };
 
   const handleTimeInputChange = useCallback(
     (text: string, setter: (value: string) => void) => {
@@ -157,7 +155,6 @@ const ScheduleFormComponent = ({
   };
 
   return (
-    // ... JSX dari form Anda tidak berubah ...
     <>
       <View style={styles.card}>
         <Text style={styles.cardTitle}>
@@ -259,7 +256,6 @@ const ScheduleFormComponent = ({
   );
 };
 
-// 2. Bungkus komponen bernama tersebut dengan React.memo
 const ScheduleForm = React.memo(ScheduleFormComponent);
 
 // --- KOMPONEN UTAMA ---
@@ -270,6 +266,39 @@ export default function SettingsScreen() {
   const [profileImage] = useState<string | null>(null);
   const [deleteMessage, setDeleteMessage] = useState<string | null>(null);
   const fadeAnim = useState(new Animated.Value(0))[0];
+
+  // --- PERUBAHAN DIMULAI ---
+  // State untuk mengelola modal edit dan data yang sedang diedit
+  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
+  const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
+  const [editOnTime, setEditOnTime] = useState("");
+  const [editOffTime, setEditOffTime] = useState("");
+  const [editError, setEditError] = useState<string | null>(null);
+
+  // Fungsi untuk menangani input waktu di modal edit
+  const handleEditTimeChange = useCallback(
+    (text: string, setter: (value: string) => void) => {
+      setEditError(null); // Hapus error saat pengguna mulai mengetik
+      const nums = text.replace(/[^0-9]/g, "");
+      if (nums.length > 4) return;
+      let formattedText = nums;
+      if (nums.length > 2) {
+        formattedText = `${nums.slice(0, 2)}:${nums.slice(2)}`;
+      }
+      setter(formattedText);
+    },
+    []
+  );
+
+  // Fungsi untuk membuka modal edit dan mengisi data yang ada
+  const handleStartEdit = useCallback((schedule: Schedule) => {
+    setEditingSchedule(schedule);
+    setEditOnTime(schedule.onTime);
+    setEditOffTime(schedule.offTime);
+    setEditError(null);
+    setIsEditModalVisible(true);
+  }, []);
+  // --- PERUBAHAN SELESAI ---
 
   const handleDeviceChange = useCallback((device: Device) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -329,19 +358,57 @@ export default function SettingsScreen() {
     [selectedDevice, showSuccessMessage]
   );
 
-  const renderHiddenItem = (data: any, rowMap: any) => (
-    <View style={styles.rowBack}>
-      <TouchableOpacity
-        style={[styles.backRightBtn, styles.backRightBtnRight]}
-        onPress={() => {
-          rowMap[data.item.id].closeRow();
-          handleDelete(data.item.id);
-        }}
-      >
-        <Ionicons name="trash-outline" size={22} color={Colors.white} />
-      </TouchableOpacity>
-    </View>
-  );
+  // --- PERUBAHAN DIMULAI ---
+  // Fungsi untuk memvalidasi dan menyimpan perubahan jadwal
+  const handleUpdateSchedule = useCallback(() => {
+    if (!editingSchedule) return;
+
+    setEditError(null);
+
+    const newStartTime = timeToMinutes(editOnTime);
+    const newEndTime = timeToMinutes(editOffTime);
+
+    if (isNaN(newStartTime) || isNaN(newEndTime)) {
+      return setEditError("Invalid time format. Please use HH:MM.");
+    }
+    if (newEndTime <= newStartTime) {
+      return setEditError("Off time must be after on time.");
+    }
+
+    // Cek tumpang tindih dengan jadwal lain di hari yang sama
+    const schedulesForDay = schedules[selectedDevice].filter(
+      (s) => s.day === editingSchedule.day && s.id !== editingSchedule.id // Kecualikan jadwal yang sedang diedit
+    );
+
+    for (const schedule of schedulesForDay) {
+      const existingStartTime = timeToMinutes(schedule.onTime);
+      const existingEndTime = timeToMinutes(schedule.offTime);
+      if (newStartTime < existingEndTime && newEndTime > existingStartTime) {
+        return setEditError("This schedule overlaps with an existing one.");
+      }
+    }
+
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setSchedules((prev) => ({
+      ...prev,
+      [selectedDevice]: prev[selectedDevice].map((s) =>
+        s.id === editingSchedule.id
+          ? { ...s, onTime: editOnTime, offTime: editOffTime }
+          : s
+      ),
+    }));
+
+    setIsEditModalVisible(false);
+    setEditingSchedule(null);
+    showSuccessMessage("Schedule updated successfully");
+  }, [
+    editingSchedule,
+    editOnTime,
+    editOffTime,
+    schedules,
+    selectedDevice,
+    showSuccessMessage,
+  ]);
 
   const renderScheduleItem = ({ item }: { item: Schedule }) => (
     <View style={styles.scheduleCard}>
@@ -360,6 +427,28 @@ export default function SettingsScreen() {
           </View>
         </View>
       </View>
+      {/* Tombol edit ditambahkan di sini */}
+      <TouchableOpacity
+        onPress={() => handleStartEdit(item)}
+        style={styles.editButton}
+      >
+        <Ionicons name="create-outline" size={24} color={Colors.primary} />
+      </TouchableOpacity>
+    </View>
+  );
+  // --- PERUBAHAN SELESAI ---
+
+  const renderHiddenItem = (data: any, rowMap: any) => (
+    <View style={styles.rowBack}>
+      <TouchableOpacity
+        style={[styles.backRightBtn, styles.backRightBtnRight]}
+        onPress={() => {
+          rowMap[data.item.id].closeRow();
+          handleDelete(data.item.id);
+        }}
+      >
+        <Ionicons name="trash-outline" size={22} color={Colors.white} />
+      </TouchableOpacity>
     </View>
   );
 
@@ -441,7 +530,10 @@ export default function SettingsScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+    <SafeAreaView
+      style={styles.container}
+      edges={["top", "left", "right", "bottom"]}
+    >
       <Pressable style={{ flex: 1 }} onPress={Keyboard.dismiss}>
         <SwipeListView
           style={{ flex: 1 }}
@@ -457,6 +549,94 @@ export default function SettingsScreen() {
           showsVerticalScrollIndicator={false}
         />
       </Pressable>
+
+      {/* --- PERUBAHAN DIMULAI --- */}
+      {/* Modal untuk mengedit jadwal */}
+      {editingSchedule && (
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={isEditModalVisible}
+          onRequestClose={() => setIsEditModalVisible(false)}
+        >
+          <Pressable
+            style={styles.modalOverlay}
+            onPress={() => setIsEditModalVisible(false)}
+          >
+            <Pressable style={styles.editModalContent}>
+              <Text style={styles.modalTitle}>Edit Schedule</Text>
+              <Text style={styles.editDayText}>
+                Editing for{" "}
+                <Text style={{ fontWeight: "bold" }}>
+                  {editingSchedule.day}
+                </Text>
+              </Text>
+
+              <View style={styles.timeInputContainer}>
+                <View style={styles.timeInputRow}>
+                  <Ionicons
+                    name="time-outline"
+                    size={20}
+                    color={Colors.textLight}
+                  />
+                  <Text style={styles.timeLabel}>On Time</Text>
+                  <TextInput
+                    style={styles.timeInput}
+                    placeholder="HH:MM"
+                    keyboardType="numeric"
+                    maxLength={5}
+                    value={editOnTime}
+                    onChangeText={(text) =>
+                      handleEditTimeChange(text, setEditOnTime)
+                    }
+                  />
+                </View>
+                <View style={styles.timeInputRow}>
+                  <Ionicons
+                    name="time-outline"
+                    size={20}
+                    color={Colors.textLight}
+                  />
+                  <Text style={styles.timeLabel}>Off Time</Text>
+                  <TextInput
+                    style={styles.timeInput}
+                    placeholder="HH:MM"
+                    keyboardType="numeric"
+                    maxLength={5}
+                    value={editOffTime}
+                    onChangeText={(text) =>
+                      handleEditTimeChange(text, setEditOffTime)
+                    }
+                  />
+                </View>
+              </View>
+
+              {editError && (
+                <Text style={styles.submitErrorText}>{editError}</Text>
+              )}
+
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={handleUpdateSchedule}
+              >
+                <Text style={styles.submitButtonText}>Save Changes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.submitButton, styles.cancelButton]}
+                onPress={() => setIsEditModalVisible(false)}
+              >
+                <Text
+                  style={[styles.submitButtonText, styles.cancelButtonText]}
+                >
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+            </Pressable>
+          </Pressable>
+        </Modal>
+      )}
+      {/* --- PERUBAHAN SELESAI --- */}
+
       {deleteMessage && (
         <Animated.View
           style={[
@@ -491,7 +671,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.secondary },
   listContentContainer: {
     paddingHorizontal: 20,
-    paddingBottom: 30,
+    paddingBottom: 150,
     paddingTop: 50,
   },
   profileContainer: { alignItems: "center", marginVertical: 20 },
@@ -633,15 +813,15 @@ const styles = StyleSheet.create({
 
   modalOverlay: {
     flex: 1,
-    justifyContent: "flex-end",
+    justifyContent: "center", // --- PERUBAHAN --- (center agar lebih baik untuk modal edit)
     backgroundColor: "rgba(0, 0, 0, 0.5)",
+    paddingHorizontal: 20, // --- PERUBAHAN ---
   },
   modalContent: {
     backgroundColor: Colors.white,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderRadius: 20, // --- PERUBAHAN ---
     padding: 20,
-    paddingBottom: 30,
+    paddingBottom: 20, // --- PERUBAHAN ---
     width: "100%",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -3 },
@@ -730,4 +910,43 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   toastText: { color: "#fff", fontSize: 14, fontWeight: "600" },
+
+  // --- PERUBAHAN DIMULAI ---
+  // Style baru untuk fitur edit
+  editButton: {
+    paddingLeft: 15, // Memberi jarak dari konten info
+    padding: 5, // Area klik yang lebih besar
+  },
+  editModalContent: {
+    // Style khusus untuk modal edit agar berbeda dari modal pilih hari
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 25,
+    width: "100%",
+    alignSelf: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  editDayText: {
+    fontSize: 16,
+    textAlign: "center",
+    color: Colors.textLight,
+    marginBottom: 20,
+  },
+  cancelButton: {
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: Colors.textLight,
+    marginTop: 10,
+  },
+  cancelButtonText: {
+    color: Colors.textLight,
+  },
+  // --- PERUBAHAN SELESAI ---
 });
