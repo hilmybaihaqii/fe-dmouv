@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Image,
@@ -11,10 +12,10 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { UserRole } from "../api/auth";
 import AboutAppModal from "../components/modal/about-app";
 import { ChangeNameModal } from "../components/modal/ChangeNameModal";
 import { ChangePasswordModal } from "../components/modal/ChangePasswordModal";
-import HelpCenterModal from "../components/modal/help-center";
 import { Colors } from "../constants/Colors";
 
 const initialUserData = {
@@ -23,23 +24,51 @@ const initialUserData = {
   profilePicture: require("../assets/images/pp.svg"),
 };
 
-export default function AccountSettingsScreen() {
+const AccountSettingsScreen: React.FC = () => {
   const router = useRouter();
-  const [userName, setUserName] = useState(initialUserData.name);
+  const [userName, setUserName] = useState<string>(initialUserData.name);
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
-  // State untuk semua modal
-  const [isPasswordModalVisible, setPasswordModalVisible] = useState(false);
-  const [isHelpCenterModalVisible, setHelpCenterModalVisible] = useState(false);
-  const [isAboutAppModalVisible, setAboutAppModalVisible] = useState(false);
-  const [isNameModalVisible, setNameModalVisible] = useState(false);
+  // --- PERUBAHAN 4: State untuk menyimpan peran pengguna ---
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
+
+  // State untuk modal
+  const [isPasswordModalVisible, setPasswordModalVisible] =
+    useState<boolean>(false);
+  const [isAboutAppModalVisible, setAboutAppModalVisible] =
+    useState<boolean>(false);
+  const [isNameModalVisible, setNameModalVisible] = useState<boolean>(false);
 
   const insets = useSafeAreaInsets();
 
-  const handleLogout = () => {
+  // --- PERUBAHAN 5: useEffect untuk mengambil peran dari AsyncStorage ---
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        const role = (await AsyncStorage.getItem(
+          "userRole"
+        )) as UserRole | null;
+        setUserRole(role);
+      } catch (e) {
+        console.error("Gagal mengambil peran pengguna", e);
+      }
+    };
+
+    fetchUserRole();
+  }, []);
+
+  const handleLogout = async () => {
     Alert.alert("Log Out", "Are you sure you want to log out?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Yes", onPress: () => router.replace("/(auth)/login") },
+      {
+        text: "Yes",
+        onPress: async () => {
+          // Hapus sesi saat logout
+          await AsyncStorage.removeItem("userToken");
+          await AsyncStorage.removeItem("userRole");
+          router.replace("/(auth)/login");
+        },
+      },
     ]);
   };
 
@@ -78,7 +107,6 @@ export default function AccountSettingsScreen() {
   const handleSubmitNameChange = (newName: string) => {
     setUserName(newName);
     setNameModalVisible(false);
-    // Di sini Anda bisa menambahkan logika untuk mengirim nama baru ke backend
     Alert.alert("Name Updated", "Your name has been successfully changed.");
   };
 
@@ -123,6 +151,7 @@ export default function AccountSettingsScreen() {
             </View>
           </View>
 
+          {/* Name */}
           <TouchableOpacity
             style={styles.optionRow}
             onPress={() => setNameModalVisible(true)}
@@ -166,29 +195,33 @@ export default function AccountSettingsScreen() {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.optionRow}
-            onPress={() => setHelpCenterModalVisible(true)}
-          >
-            <Ionicons
-              name="help-circle-outline"
-              size={24}
-              color={Colors.primary}
-              style={styles.optionIcon}
-            />
-            <View style={styles.optionTextContainer}>
-              <Text style={styles.optionTitle}>Help Center</Text>
-              <Text style={styles.optionValue}>
-                Get assistance with the app
-              </Text>
-            </View>
-            <Ionicons
-              name="chevron-forward"
-              size={22}
-              color={Colors.textLight}
-            />
-          </TouchableOpacity>
+          {/* --- PERUBAHAN 6: Tampilkan "Add Account" secara kondisional --- */}
+          {userRole === "superuser" && (
+            <TouchableOpacity
+              style={styles.optionRow}
+              onPress={() => router.push("/adduser")}
+            >
+              <Ionicons
+                name="person-add-outline"
+                size={24}
+                color={Colors.primary}
+                style={styles.optionIcon}
+              />
+              <View style={styles.optionTextContainer}>
+                <Text style={styles.optionTitle}>Add Account</Text>
+                <Text style={styles.optionValue}>
+                  Create a new user profile
+                </Text>
+              </View>
+              <Ionicons
+                name="chevron-forward"
+                size={22}
+                color={Colors.textLight}
+              />
+            </TouchableOpacity>
+          )}
 
+          {/* About App */}
           <TouchableOpacity
             style={styles.optionRow}
             onPress={() => setAboutAppModalVisible(true)}
@@ -223,11 +256,6 @@ export default function AccountSettingsScreen() {
         onSubmit={handleSubmitPasswordChange}
       />
 
-      <HelpCenterModal
-        visible={isHelpCenterModalVisible}
-        onClose={() => setHelpCenterModalVisible(false)}
-      />
-
       <AboutAppModal
         visible={isAboutAppModalVisible}
         onClose={() => setAboutAppModalVisible(false)}
@@ -241,7 +269,9 @@ export default function AccountSettingsScreen() {
       />
     </View>
   );
-}
+};
+
+export default AccountSettingsScreen;
 
 const styles = StyleSheet.create({
   fullScreenContainer: {

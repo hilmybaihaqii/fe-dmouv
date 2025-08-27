@@ -1,53 +1,55 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  LayoutAnimation,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-  LayoutAnimation,
   UIManager,
+  View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Colors } from "../constants/Colors";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { SwipeListView } from "react-native-swipe-list-view";
+import { FilterType } from "../components/modal/filter";
+import { Colors } from "../constants/Colors";
 
-// Mengaktifkan LayoutAnimation untuk Android
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+if (
+  Platform.OS === "android" &&
+  UIManager.setLayoutAnimationEnabledExperimental
+) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-// --- DATA & TIPE ---
 type LogEntry = {
   id: string;
   date: string;
+  type: FilterType;
 };
 
 const DUMMY_LOGS: LogEntry[] = [
-  { id: "1", date: "August 13 at 15:00 PM" },
-  { id: "2", date: "August 13 at 10:00 PM" },
-  { id: "3", date: "August 12 at 15:00 PM" },
-  { id: "4", date: "August 11 at 20:00 PM" },
-  { id: "5", date: "August 11 at 22:00 PM" },
-  { id: "6", date: "August 10 at 14:00 PM" },
-  { id: "7", date: "August 9 at 12:00 PM" },
-  { id: "8", date: "August 8 at 11:00 PM" },
-  { id: "9", date: "August 7 at 14:00 PM" },
-  { id: "10", date: "August 6 at 04:00 PM" },
-  { id: "11", date: "August 5 at 18:00 PM" },
-  { id: "12", date: "August 4 at 17:00 PM" },
+  { id: "1", date: "August 13 at 15:00 PM", type: "motion" },
+  { id: "2", date: "August 13 at 10:00 PM", type: "schedule" },
+  { id: "3", date: "August 12 at 15:00 PM", type: "automatic" },
+  { id: "4", date: "August 11 at 20:00 PM", type: "lamp-on" },
+  { id: "5", date: "August 11 at 22:00 PM", type: "fan-off" },
+  { id: "6", date: "August 10 at 14:00 PM", type: "motion" },
+  { id: "7", date: "August 9 at 12:00 PM", type: "schedule" },
+  { id: "8", date: "August 8 at 11:00 PM", type: "automatic" },
+  { id: "9", date: "August 7 at 14:00 PM", type: "lamp-off" },
+  { id: "10", date: "August 6 at 04:00 PM", type: "fan-on" },
+  { id: "11", date: "August 5 at 18:00 PM", type: "motion" },
+  { id: "12", date: "August 4 at 17:00 PM", type: "schedule" },
 ];
 
 const userName = "TimRisetCPS";
 
-// --- KOMPONEN UTAMA ---
 export default function NotificationsScreen() {
-  const insets = useSafeAreaInsets();
   const [activityLogs, setActivityLogs] = useState<LogEntry[]>([]);
   const [currentDate, setCurrentDate] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     setActivityLogs(DUMMY_LOGS);
@@ -66,26 +68,37 @@ export default function NotificationsScreen() {
     setActivityLogs((prevLogs) => prevLogs.filter((log) => log.id !== id));
   };
 
-  // Render item yang terlihat (notifikasi biru)
+  const handleNotificationPress = (notification: LogEntry) => {
+    router.push({
+      pathname: "/(tabs)/history",
+      params: { filter: notification.type },
+    });
+  };
+
+  // --- PERUBAHAN: Bungkus konten dengan TouchableOpacity ---
   const renderItem = (data: { item: LogEntry }) => (
-    <View style={styles.itemContainer}>
-      <Ionicons
-        name="warning-outline"
-        size={24}
-        color={Colors.white}
-        style={styles.itemIcon}
-      />
-      <View style={styles.itemTextContainer}>
-        <Text style={styles.itemText}>
-          <Text style={styles.itemTextBold}>Security update: </Text>
-          Someone just moved in your space
-        </Text>
-        <Text style={styles.itemDate}>{data.item.date}</Text>
+    <TouchableOpacity
+      activeOpacity={1}
+      onPress={() => handleNotificationPress(data.item)}
+    >
+      <View style={styles.itemContainer}>
+        <Ionicons
+          name="warning-outline"
+          size={24}
+          color={Colors.white}
+          style={styles.itemIcon}
+        />
+        <View style={styles.itemTextContainer}>
+          <Text style={styles.itemText}>
+            <Text style={styles.itemTextBold}>Security update: </Text>
+            Someone just moved in your space
+          </Text>
+          <Text style={styles.itemDate}>{data.item.date}</Text>
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
-  // Render item yang tersembunyi (tombol hapus merah)
   const renderHiddenItem = (data: { item: LogEntry }) => (
     <View style={styles.rowBack}>
       <TouchableOpacity
@@ -99,12 +112,7 @@ export default function NotificationsScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView
-        style={[
-          styles.container,
-          { paddingTop: insets.top + (Platform.OS === "ios" ? 10 : 20) },
-        ]}
-      >
+      <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
         <View style={styles.headerFixed}>
           <Text style={styles.title}>Activity Log</Text>
           <Text style={styles.greeting}>Hello, {userName}</Text>
@@ -112,19 +120,24 @@ export default function NotificationsScreen() {
         </View>
 
         {activityLogs.length > 0 ? (
+          // --- PERUBAHAN: Hapus prop onRowClick yang salah ---
           <SwipeListView
             data={activityLogs}
             renderItem={renderItem}
             renderHiddenItem={renderHiddenItem}
             keyExtractor={(item) => item.id}
-            rightOpenValue={-80} // Lebar tombol hapus
+            rightOpenValue={-80}
             disableRightSwipe
             contentContainerStyle={styles.flatListContent}
             showsVerticalScrollIndicator={false}
           />
         ) : (
           <View style={styles.emptyContainer}>
-            <Ionicons name="notifications-off-outline" size={60} color={Colors.textLight} />
+            <Ionicons
+              name="notifications-off-outline"
+              size={60}
+              color={Colors.textLight}
+            />
             <Text style={styles.emptyText}>No New Notifications</Text>
             <Text style={styles.emptySubText}>You are all caught up!</Text>
           </View>
@@ -134,7 +147,6 @@ export default function NotificationsScreen() {
   );
 }
 
-// --- STYLESHEET ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -168,7 +180,6 @@ const styles = StyleSheet.create({
   },
   flatListContent: {
     paddingHorizontal: 20,
-    paddingBottom: 20,
   },
   itemContainer: {
     backgroundColor: Colors.primary,
@@ -200,19 +211,18 @@ const styles = StyleSheet.create({
     marginTop: 3,
     fontFamily: "Roboto-Regular",
   },
-  // Style untuk item tersembunyi (swipe)
   rowBack: {
-    alignItems: 'center',
+    alignItems: "center",
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "flex-end",
     marginBottom: 12,
   },
   deleteButton: {
     backgroundColor: Colors.redDot,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
     top: 0,
     bottom: 0,
     right: 0,
@@ -221,18 +231,18 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingBottom: 60,
   },
   emptyText: {
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: "Poppins-SemiBold",
     fontSize: 18,
     color: Colors.text,
     marginTop: 20,
   },
   emptySubText: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     fontSize: 14,
     color: Colors.textLight,
     marginTop: 5,

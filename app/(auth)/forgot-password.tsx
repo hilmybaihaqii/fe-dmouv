@@ -5,7 +5,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -25,7 +24,6 @@ export default function ForgotPasswordScreen() {
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
   const router = useRouter();
 
-  // --- PERUBAHAN: State untuk modal sukses DIHAPUS ---
   const [errors, setErrors] = useState({
     email: "",
     newPassword: "",
@@ -71,7 +69,6 @@ export default function ForgotPasswordScreen() {
     }
 
     console.log("Resetting password for:", { email, newPassword });
-    // --- PERUBAHAN: Langsung navigasi ke halaman login ---
     router.push("/(auth)/login");
   };
 
@@ -81,131 +78,127 @@ export default function ForgotPasswordScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingContainer}
       >
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.headerContainer}>
-            <FullLogo width={306} height={66} style={{ marginBottom: 20 }} />
-            <Text style={styles.title}>Reset Your Password</Text>
-            <Text style={styles.subtitle}>
-              Enter your email and a new password
-            </Text>
+        <View style={styles.headerContainer}>
+          <FullLogo width={306} height={66} style={styles.logo} />
+          <Text style={styles.title}>Reset Your Password</Text>
+          <Text style={styles.subtitle}>
+            Enter your email and a new password
+          </Text>
+        </View>
+
+        <View style={styles.card}>
+          {/* Input E-mail */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={[
+                styles.input,
+                focusedInput === "email" && styles.inputFocused,
+                !!errors.email && styles.inputError,
+              ]}
+              placeholder="Enter your registered email"
+              placeholderTextColor={Colors.textLight}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              onFocus={() => setFocusedInput("email")}
+              onBlur={() => setFocusedInput(null)}
+            />
+            {errors.email ? (
+              <Text style={styles.errorText}>{errors.email}</Text>
+            ) : null}
           </View>
 
-          <View style={styles.card}>
-            {/* Input E-mail */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email</Text>
+          {/* Input New Password */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>New Password</Text>
+            <View
+              style={[
+                styles.passwordWrapper,
+                focusedInput === "newPassword" && styles.inputFocused,
+                !!errors.newPassword && styles.inputError,
+              ]}
+            >
               <TextInput
-                style={[
-                  styles.input,
-                  focusedInput === "email" && styles.inputFocused,
-                  !!errors.email && styles.inputError,
-                ]}
-                placeholder="Enter your registered email"
+                style={styles.passwordInput}
+                placeholder="Minimum 8 characters"
                 placeholderTextColor={Colors.textLight}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                onFocus={() => setFocusedInput("email")}
+                value={newPassword}
+                onChangeText={setNewPassword}
+                secureTextEntry={!isPasswordVisible}
+                onFocus={() => setFocusedInput("newPassword")}
                 onBlur={() => setFocusedInput(null)}
               />
-              {errors.email ? (
-                <Text style={styles.errorText}>{errors.email}</Text>
-              ) : null}
-            </View>
-
-            {/* Input New Password */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>New Password</Text>
-              <View
-                style={[
-                  styles.passwordWrapper,
-                  focusedInput === "newPassword" && styles.inputFocused,
-                  !!errors.newPassword && styles.inputError,
-                ]}
+              <TouchableOpacity
+                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                style={styles.eyeIconWrapper}
               >
-                <TextInput
-                  style={styles.passwordInput}
-                  placeholder="Minimum 8 characters"
-                  placeholderTextColor={Colors.textLight}
-                  value={newPassword}
-                  onChangeText={setNewPassword}
-                  secureTextEntry={!isPasswordVisible}
-                  onFocus={() => setFocusedInput("newPassword")}
-                  onBlur={() => setFocusedInput(null)}
+                <Ionicons
+                  name={isPasswordVisible ? "eye-off" : "eye"}
+                  size={24}
+                  color={Colors.primary}
                 />
-                <TouchableOpacity
-                  onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-                  style={styles.eyeIconWrapper}
-                >
-                  <Ionicons
-                    name={isPasswordVisible ? "eye-off" : "eye"}
-                    size={24}
-                    color={Colors.primary}
-                  />
-                </TouchableOpacity>
-              </View>
-              {errors.newPassword ? (
-                <Text style={styles.errorText}>{errors.newPassword}</Text>
-              ) : null}
-            </View>
-
-            {/* Input Confirm New Password */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Confirm New Password</Text>
-              <View
-                style={[
-                  styles.passwordWrapper,
-                  focusedInput === "confirmPassword" && styles.inputFocused,
-                  !!errors.confirmPassword && styles.inputError,
-                ]}
-              >
-                <TextInput
-                  style={styles.passwordInput}
-                  placeholder="Repeat new password"
-                  placeholderTextColor={Colors.textLight}
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  secureTextEntry={!isConfirmPasswordVisible}
-                  onFocus={() => setFocusedInput("confirmPassword")}
-                  onBlur={() => setFocusedInput(null)}
-                />
-                <TouchableOpacity
-                  onPress={() =>
-                    setIsConfirmPasswordVisible(!isConfirmPasswordVisible)
-                  }
-                  style={styles.eyeIconWrapper}
-                >
-                  <Ionicons
-                    name={isConfirmPasswordVisible ? "eye-off" : "eye"}
-                    size={24}
-                    color={Colors.primary}
-                  />
-                </TouchableOpacity>
-              </View>
-              {errors.confirmPassword ? (
-                <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-              ) : null}
-            </View>
-
-            {/* Tombol Submit */}
-            <TouchableOpacity
-              style={styles.connectButton}
-              onPress={handleResetPassword}
-            >
-              <Text style={styles.connectButtonText}>Reset Password</Text>
-            </TouchableOpacity>
-
-            <View style={styles.footerContainer}>
-              <TouchableOpacity onPress={() => router.back()}>
-                <Text style={styles.backLink}>Back to Sign In</Text>
               </TouchableOpacity>
             </View>
+            {errors.newPassword ? (
+              <Text style={styles.errorText}>{errors.newPassword}</Text>
+            ) : null}
           </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
 
-      {/* --- PERUBAHAN: Modal DIHAPUS dari sini --- */}
+          {/* Input Confirm New Password */}
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Confirm New Password</Text>
+            <View
+              style={[
+                styles.passwordWrapper,
+                focusedInput === "confirmPassword" && styles.inputFocused,
+                !!errors.confirmPassword && styles.inputError,
+              ]}
+            >
+              <TextInput
+                style={styles.passwordInput}
+                placeholder="Repeat new password"
+                placeholderTextColor={Colors.textLight}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry={!isConfirmPasswordVisible}
+                onFocus={() => setFocusedInput("confirmPassword")}
+                onBlur={() => setFocusedInput(null)}
+              />
+              <TouchableOpacity
+                onPress={() =>
+                  setIsConfirmPasswordVisible(!isConfirmPasswordVisible)
+                }
+                style={styles.eyeIconWrapper}
+              >
+                <Ionicons
+                  name={isConfirmPasswordVisible ? "eye-off" : "eye"}
+                  size={24}
+                  color={Colors.primary}
+                />
+              </TouchableOpacity>
+            </View>
+            {errors.confirmPassword ? (
+              <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+            ) : null}
+          </View>
+
+          {/* Tombol Submit */}
+          <TouchableOpacity
+            style={styles.connectButton}
+            onPress={handleResetPassword}
+          >
+            <Text style={styles.connectButtonText}>Reset Password</Text>
+          </TouchableOpacity>
+
+          <View style={styles.footerContainer}>
+            <TouchableOpacity onPress={() => router.back()}>
+              <Text style={styles.backLink}>Back to Sign In</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -218,20 +211,25 @@ const styles = StyleSheet.create({
   keyboardAvoidingContainer: {
     flex: 1,
     justifyContent: "center",
+    padding: 20, // Disamakan dengan login
   },
   headerContainer: {
     alignItems: "center",
-    marginBottom: 30,
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    marginBottom: 30, // Disamakan dengan login
+  },
+  logo: {
+    width: 180, // Disamakan dengan login
+    height: 60, // Disamakan dengan login
+    resizeMode: "contain", // Disamakan dengan login
+    marginBottom: 20, // Disamakan dengan login
   },
   title: {
     fontFamily: "Poppins-Medium",
     fontSize: 22,
     color: Colors.primary,
     textAlign: "center",
-    textShadowColor: "rgba(0, 0, 0, 0.4)",
-    textShadowOffset: { width: 1.5, height: 1.5 },
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
   },
   subtitle: {
@@ -245,7 +243,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.cardgray,
     borderRadius: 20,
     padding: 25,
-    marginHorizontal: 20,
     elevation: 7,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
@@ -336,5 +333,4 @@ const styles = StyleSheet.create({
     marginTop: 5,
     paddingLeft: 4,
   },
-  // --- PERUBAHAN: Semua style modal DIHAPUS dari sini ---
 });
