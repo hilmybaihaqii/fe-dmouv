@@ -23,8 +23,12 @@ export const TEAM_DATA = [
         code: "ABR",
         major: "Telecommunication Engineering",
         profilePic: ProfilePlaceholder,
-        quote: "The best error message is the one that never appears.",
-        socials: { instagram: "#", linkedin: "#", github: "#" },
+        quote: "Hamoraon, Hagabeon, Hasangapon",
+        socials: {
+          instagram: "https://www.instagram.com/abrah4m.b",
+          linkedin: "https://www.linkedin.com/in/a-benedick/",
+          github: "https://github.com/bramcps",
+        },
       },
       {
         id: "3",
@@ -65,10 +69,8 @@ export const TEAM_DATA = [
         profilePic: require("../assets/team/aurel.png"),
         quote: "Good design is good business",
         socials: {
-          instagram:
-            "https://www.instagram.com/aureliasyrch?igsh=MWI1dHNrdDByYTFrZw%3D%3D&utm_source=qr",
-          linkedin:
-            "https://www.linkedin.com/in/aurelia-aisya-rachma-63273b26b?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app",
+          instagram: "https://www.instagram.com/aureliasyrch/",
+          linkedin: "https://www.linkedin.com/in/aureliaaisyarachma/",
           github: "https://github.com/aureliasyrch",
         },
       },
