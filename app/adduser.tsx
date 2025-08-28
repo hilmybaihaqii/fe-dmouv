@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  ScrollView, // --- PERUBAHAN DIMULAI --- (Import ScrollView)
   StyleSheet,
   Text,
   TextInput,
@@ -119,191 +120,199 @@ const AddUserScreen: React.FC = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingContainer}
       >
-        <View style={styles.contentWrapper}>
-          <Text style={styles.pageTitle}>Create New User</Text>
-          <Text style={styles.pageSubtitle}>
-            Enter the details below to create a new account
-          </Text>
+        {/* --- PERUBAHAN DIMULAI --- (ScrollView membungkus konten form) */}
+        <ScrollView
+          contentContainerStyle={styles.scrollContentContainer}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.contentWrapper}>
+            <Text style={styles.pageTitle}>Create New User</Text>
+            <Text style={styles.pageSubtitle}>
+              Enter the details below to create a new account
+            </Text>
 
-          <View style={styles.formContainer}>
-            {/* Name Input */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Full Name</Text>
-              <View
-                style={[
-                  styles.inputGroup,
-                  focusedInput === "name" && styles.inputFocused,
-                  !!errors.name && styles.inputError,
-                ]}
-              >
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter full name"
-                  placeholderTextColor={Colors.textLight}
-                  value={name}
-                  onChangeText={(text) => {
-                    setName(text);
-                    clearErrorsOnChange("name");
-                  }}
-                  onFocus={() => setFocusedInput("name")}
-                  onBlur={() => setFocusedInput(null)}
-                />
-              </View>
-              {errors.name ? (
-                <Text style={styles.errorText}>{errors.name}</Text>
-              ) : null}
-            </View>
-
-            {/* Email Input */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email Address</Text>
-              <View
-                style={[
-                  styles.inputGroup,
-                  focusedInput === "email" && styles.inputFocused,
-                  !!errors.email && styles.inputError,
-                ]}
-              >
-                <TextInput
-                  style={styles.input}
-                  placeholder="Enter email address"
-                  placeholderTextColor={Colors.textLight}
-                  value={email}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  onChangeText={(text) => {
-                    setEmail(text);
-                    clearErrorsOnChange("email");
-                  }}
-                  onFocus={() => setFocusedInput("email")}
-                  onBlur={() => setFocusedInput(null)}
-                />
-              </View>
-              {errors.email ? (
-                <Text style={styles.errorText}>{errors.email}</Text>
-              ) : null}
-            </View>
-
-            {/* Password Input */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Password</Text>
-              <View
-                style={[
-                  styles.inputGroup,
-                  focusedInput === "password" && styles.inputFocused,
-                  !!errors.password && styles.inputError,
-                ]}
-              >
-                <TextInput
-                  style={styles.input}
-                  placeholder="Min. 8 characters"
-                  placeholderTextColor={Colors.textLight}
-                  secureTextEntry={!isPasswordVisible}
-                  value={password}
-                  onChangeText={(text) => {
-                    setPassword(text);
-                    clearErrorsOnChange("password");
-                  }}
-                  onFocus={() => setFocusedInput("password")}
-                  onBlur={() => setFocusedInput(null)}
-                />
-                <TouchableOpacity
-                  onPress={() => setPasswordVisible(!isPasswordVisible)}
-                  style={styles.eyeIcon}
-                >
-                  <Ionicons
-                    name={isPasswordVisible ? "eye-off" : "eye"}
-                    size={24}
-                    color={Colors.primary}
-                  />
-                </TouchableOpacity>
-              </View>
-              {errors.password ? (
-                <Text style={styles.errorText}>{errors.password}</Text>
-              ) : null}
-            </View>
-
-            {/* Confirm Password Input */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Confirm Password</Text>
-              <View
-                style={[
-                  styles.inputGroup,
-                  focusedInput === "confirmPassword" && styles.inputFocused,
-                  !!errors.confirmPassword && styles.inputError,
-                ]}
-              >
-                <TextInput
-                  style={styles.input}
-                  placeholder="Re-enter password"
-                  placeholderTextColor={Colors.textLight}
-                  secureTextEntry={!isConfirmPasswordVisible}
-                  value={confirmPassword}
-                  onChangeText={(text) => {
-                    setConfirmPassword(text);
-                    clearErrorsOnChange("confirmPassword");
-                  }}
-                  onFocus={() => setFocusedInput("confirmPassword")}
-                  onBlur={() => setFocusedInput(null)}
-                />
-                <TouchableOpacity
-                  onPress={() =>
-                    setConfirmPasswordVisible(!isConfirmPasswordVisible)
-                  }
-                  style={styles.eyeIcon}
-                >
-                  <Ionicons
-                    name={isConfirmPasswordVisible ? "eye-off" : "eye"}
-                    size={24}
-                    color={Colors.primary}
-                  />
-                </TouchableOpacity>
-              </View>
-              {errors.confirmPassword ? (
-                <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-              ) : null}
-            </View>
-
-            {/* Role Selection */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Select Role</Text>
-              <View style={styles.roleOptions}>
-                <TouchableOpacity
+            <View style={styles.formContainer}>
+              {/* Name Input */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Full Name</Text>
+                <View
                   style={[
-                    styles.roleButton,
-                    role === "user" && styles.roleButtonActive,
+                    styles.inputGroup,
+                    focusedInput === "name" && styles.inputFocused,
+                    !!errors.name && styles.inputError,
                   ]}
-                  onPress={() => setRole("user")}
                 >
-                  <Text
-                    style={[
-                      styles.roleButtonText,
-                      role === "user" && styles.roleButtonTextActive,
-                    ]}
-                  >
-                    User
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter full name"
+                    placeholderTextColor={Colors.textLight}
+                    value={name}
+                    onChangeText={(text) => {
+                      setName(text);
+                      clearErrorsOnChange("name");
+                    }}
+                    onFocus={() => setFocusedInput("name")}
+                    onBlur={() => setFocusedInput(null)}
+                  />
+                </View>
+                {errors.name ? (
+                  <Text style={styles.errorText}>{errors.name}</Text>
+                ) : null}
+              </View>
+
+              {/* Email Input */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Email Address</Text>
+                <View
                   style={[
-                    styles.roleButton,
-                    role === "superuser" && styles.roleButtonActive,
+                    styles.inputGroup,
+                    focusedInput === "email" && styles.inputFocused,
+                    !!errors.email && styles.inputError,
                   ]}
-                  onPress={() => setRole("superuser")}
                 >
-                  <Text
-                    style={[
-                      styles.roleButtonText,
-                      role === "superuser" && styles.roleButtonTextActive,
-                    ]}
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter email address"
+                    placeholderTextColor={Colors.textLight}
+                    value={email}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    onChangeText={(text) => {
+                      setEmail(text);
+                      clearErrorsOnChange("email");
+                    }}
+                    onFocus={() => setFocusedInput("email")}
+                    onBlur={() => setFocusedInput(null)}
+                  />
+                </View>
+                {errors.email ? (
+                  <Text style={styles.errorText}>{errors.email}</Text>
+                ) : null}
+              </View>
+
+              {/* Password Input */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Password</Text>
+                <View
+                  style={[
+                    styles.inputGroup,
+                    focusedInput === "password" && styles.inputFocused,
+                    !!errors.password && styles.inputError,
+                  ]}
+                >
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Min. 8 characters"
+                    placeholderTextColor={Colors.textLight}
+                    secureTextEntry={!isPasswordVisible}
+                    value={password}
+                    onChangeText={(text) => {
+                      setPassword(text);
+                      clearErrorsOnChange("password");
+                    }}
+                    onFocus={() => setFocusedInput("password")}
+                    onBlur={() => setFocusedInput(null)}
+                  />
+                  <TouchableOpacity
+                    onPress={() => setPasswordVisible(!isPasswordVisible)}
+                    style={styles.eyeIcon}
                   >
-                    Superuser
-                  </Text>
-                </TouchableOpacity>
+                    <Ionicons
+                      name={isPasswordVisible ? "eye-off" : "eye"}
+                      size={24}
+                      color={Colors.primary}
+                    />
+                  </TouchableOpacity>
+                </View>
+                {errors.password ? (
+                  <Text style={styles.errorText}>{errors.password}</Text>
+                ) : null}
+              </View>
+
+              {/* Confirm Password Input */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Confirm Password</Text>
+                <View
+                  style={[
+                    styles.inputGroup,
+                    focusedInput === "confirmPassword" && styles.inputFocused,
+                    !!errors.confirmPassword && styles.inputError,
+                  ]}
+                >
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Re-enter password"
+                    placeholderTextColor={Colors.textLight}
+                    secureTextEntry={!isConfirmPasswordVisible}
+                    value={confirmPassword}
+                    onChangeText={(text) => {
+                      setConfirmPassword(text);
+                      clearErrorsOnChange("confirmPassword");
+                    }}
+                    onFocus={() => setFocusedInput("confirmPassword")}
+                    onBlur={() => setFocusedInput(null)}
+                  />
+                  <TouchableOpacity
+                    onPress={() =>
+                      setConfirmPasswordVisible(!isConfirmPasswordVisible)
+                    }
+                    style={styles.eyeIcon}
+                  >
+                    <Ionicons
+                      name={isConfirmPasswordVisible ? "eye-off" : "eye"}
+                      size={24}
+                      color={Colors.primary}
+                    />
+                  </TouchableOpacity>
+                </View>
+                {errors.confirmPassword ? (
+                  <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+                ) : null}
+              </View>
+
+              {/* Role Selection */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>Select Role</Text>
+                <View style={styles.roleOptions}>
+                  <TouchableOpacity
+                    style={[
+                      styles.roleButton,
+                      role === "user" && styles.roleButtonActive,
+                    ]}
+                    onPress={() => setRole("user")}
+                  >
+                    <Text
+                      style={[
+                        styles.roleButtonText,
+                        role === "user" && styles.roleButtonTextActive,
+                      ]}
+                    >
+                      User
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.roleButton,
+                      role === "superuser" && styles.roleButtonActive,
+                    ]}
+                    onPress={() => setRole("superuser")}
+                  >
+                    <Text
+                      style={[
+                        styles.roleButtonText,
+                        role === "superuser" && styles.roleButtonTextActive,
+                      ]}
+                    >
+                      Superuser
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </View>
-        </View>
+        </ScrollView>
+        {/* --- PERUBAHAN SELESAI --- */}
 
         <View style={styles.buttonWrapper}>
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
@@ -323,12 +332,17 @@ const styles = StyleSheet.create({
   keyboardAvoidingContainer: {
     flex: 1,
   },
-  contentWrapper: {
-    flex: 1,
-    justifyContent: "center",
-    paddingHorizontal: 20,
-    paddingTop: 60,
+  // --- PERUBAHAN DIMULAI --- (Style baru dan modifikasi)
+  scrollContentContainer: {
+    flexGrow: 1, // Memastikan container bisa tumbuh mengisi ruang
+    justifyContent: "center", // Memusatkan konten secara vertikal
   },
+  contentWrapper: {
+    // flex: 1, // Dihapus karena flexGrow di atas sudah menangani
+    paddingHorizontal: 20,
+    paddingVertical: 20, // Menambah padding vertikal
+  },
+  // --- PERUBAHAN SELESAI ---
   pageTitle: {
     fontFamily: "Poppins-Bold",
     fontSize: 25,
